@@ -35,9 +35,7 @@ class UserSeeder extends Seeder
                 'cedula' => fake()->unique()->uuid(),
                 'phone' => fake()->e164PhoneNumber(),
                 'address' => fake()->address(),
-                'birthday' => $fechaAleatoria,
-                'date_of_purchase' => now(),
-                'membership' => fake()->randomElement([1, 2, 3, 4]),
+                'birthday' => $fechaAleatoria,                
             ]);
             $daniel->profile()->save($profile);
 
@@ -73,8 +71,6 @@ class UserSeeder extends Seeder
                 'phone' => fake()->e164PhoneNumber(),
                 'address' => fake()->address(),
                 'birthday' => $fechaAleatoriaj,
-                'date_of_purchase' => now(),
-                'membership' => fake()->randomElement([1, 2, 3, 4]),
             ]);
             $jose->profile()->save($profilej);
 

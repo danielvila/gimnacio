@@ -25,7 +25,7 @@ const updatepassword = ref(true);
 const title = ref('');
 const id_client = ref(0);
 const form = useForm({
-    name: '', email: '', password: '', password_confirmation: '', cedula: '', phone: '', address: '', birthday: '', date_of_purchase: '', membership: ''
+    name: '', email: '', password: '', password_confirmation: '', cedula: '', phone: '', address: '', birthday: ''
 });
 const search = useForm({
     q: props.q
@@ -35,7 +35,7 @@ const submit = ()=>{
     search.get(route('clients.index'));
 }
 
-const openModal = (id, name, email, cedula, phone, address, birthday, date_of_purchase, membership)=>{    
+const openModal = (id, name, email, cedula, phone, address, birthday)=>{    
     ventanamodal.value = true;
     nextTick(()=> nameInput.value.focus());
     id_client.value = id;
@@ -49,8 +49,6 @@ const openModal = (id, name, email, cedula, phone, address, birthday, date_of_pu
         form.phone = phone;
         form.address = address;
         form.birthday = birthday;
-        form.date_of_purchase = date_of_purchase; 
-        form.membership = membership;
         updatepassword.value = false;
     }
 }
@@ -145,8 +143,7 @@ const deleteClient = (id, name) => {
                                     <th class="border border-gray-400 px-2 py-2">Nombre</th>
                                     <th class="border border-gray-400 px-2 py-2">Email</th>
                                     <th class="border border-gray-400 px-2 py-2">Telefono</th>
-                                    <th class="border border-gray-400 px-2 py-2">Menbresia</th>
-                                    <th class="border border-gray-400 px-2 py-2">Fecha de compra</th>
+                                    <th class="border border-gray-400 px-2 py-2">Fecha de cumpleaños</th>
                                     <th class="border border-gray-400 px-2 py-2 text-center" colspan="2">Acciones</th>
                                 </tr>
                             </thead>
@@ -156,13 +153,11 @@ const deleteClient = (id, name) => {
                                     <td class="border border-gray-400 px-2 py-2">{{client.name}}</td>
                                     <td class="border border-gray-400 px-2 py-2">{{client.email}}</td>
                                     <td class="border border-gray-400 px-2 py-2">{{client.profile.phone}}</td>
-                                    <td class="border border-gray-400 px-2 py-2">{{client.profile.membership}}</td>
-                                    <td class="border border-gray-400 px-2 py-2">{{client.profile.date_of_purchase}}</td>
+                                    <td class="border border-gray-400 px-2 py-2">{{client.profile.birthday}}</td>
                                     <td class="border border-gray-400 px-2 py-2">
                                         <WarningButton @click="$event => openModal(client.id, client.name, 
                                             client.email, client.profile.cedula, client.profile.phone, 
-                                            client.profile.address, client.profile.birthday,
-                                            client.profile.date_of_purchase, client.profile.membership)">
+                                            client.profile.address, client.profile.birthday)">
                                             <i class="fa-solid fa-edit"></i>
                                         </WarningButton>
                                     </td>
@@ -250,29 +245,7 @@ const deleteClient = (id, name) => {
                     />
                     <InputError class="mt-2" :message="form.errors.birthday" />
                 </div>              
-            </div>
-            <div class="sm:flex">                
-                <div class="p-3 basis-1/2">
-                    <InputLabel for="membership" value="Membresia:" />
-                    <SelectInput id="membership" class="mt-1 block w-full"
-                        v-model="form.membership" :options="memberships"
-                        required
-                    ></SelectInput>                    
-                    <InputError class="mt-2" :message="form.errors.membership" />
-                </div>
-                <div class="p-3 basis-1/2">
-                    <InputLabel for="date_of_purchase" value="Fecha de compra:" />
-                    <TextInput 
-                        id="date_of_purchase"
-                        v-model="form.date_of_purchase"
-                        type="date"
-                        class="mt-1 block w-full"                        
-                        required
-                        placeholder="Fecha de compra"
-                    />
-                    <InputError class="mt-2" :message="form.errors.date_of_purchase" />
-                </div>              
-            </div>            
+            </div>           
             <div class="p-3">
                 <InputLabel for="address" value="Dirección:" />
                 <textarea id="address" v-model="form.address" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"                   

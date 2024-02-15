@@ -15,11 +15,12 @@ class MembershipSeeder extends Seeder
      */
     public function run(): void
     {
-        $durations = ['Diario'=>'1', 'Semanal'=>'7', 'Mensual'=>'30', 'Anual'=>'365'];
+        $durations = ['Mensual'=>['30', 25.99], 'Trimestral'=>['90', 75.99], 'Anual'=>['365', 200.99]];
         foreach ($durations as $key => $value) {
             Membership::create([
                 'name' => $key,
-                'duration' => $value,
+                'duration' => $value[0],
+                'price' => $value[1],
                 'created_at' => now(),
                 'updated_at' => now(),
             ]); 

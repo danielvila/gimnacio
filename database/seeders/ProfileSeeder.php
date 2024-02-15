@@ -34,9 +34,7 @@ class ProfileSeeder extends Seeder
                 'cedula' => fake()->unique()->uuid(),
                 'phone' => fake()->e164PhoneNumber(),
                 'address' => fake()->address(),
-                'birthday' => $fechaAleatoria,
-                'date_of_purchase' => now(),
-                'membership' => fake()->randomElement([1, 2, 3, 4]),
+                'birthday' => $fechaAleatoria,            
                 'user_id' =>  $client->id,
             ]);
         }
