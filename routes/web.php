@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\MembershipController;
+use App\Http\Controllers\PaymentController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -27,6 +28,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('clients', ClientController::class);
     Route::resource('memberships', MembershipController::class);
+    Route::resource('payments', PaymentController::class);
 });
 
 require __DIR__.'/auth.php';

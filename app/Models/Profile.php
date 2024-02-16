@@ -19,12 +19,9 @@ class Profile extends Model
     {
         return \Carbon\Carbon::create($value)->format("Y-m-d");
     }
-    public function getDateOfPurchaseAttribute($value)
-    {
-        return \Carbon\Carbon::create($value)->format("Y-m-d");
-    }
+
 
     protected $fillable = [
-        'cedula', 'phone', 'address', 'birthday', 'date_of_purchase', 'membership', 'user_id'
+        'cedula', 'phone', 'address', 'birthday', 'user_id'
     ];
 }

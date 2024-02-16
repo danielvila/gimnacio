@@ -7,6 +7,7 @@ import Modal from '@/Components/Modal.vue';
 import Paginator from "@/Components/Paginator.vue";
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
+import SelectInput from '@/Components/SelectInput.vue';
 import TextInput from '@/Components/TextInput.vue';
 import WarningButton from '@/Components/WarningButton.vue';
 import { Head, useForm } from '@inertiajs/vue3';
@@ -14,39 +15,42 @@ import { nextTick, ref } from 'vue';
 import Swal from 'sweetalert2';
 
 const props = defineProps({
-    memberships: {type:Object}
+    payments: {type:Object},
+    memberships: {type:Object},
+    users: {type:Object}
 });
 const nameInput = ref(null);
 const ventanamodal = ref(false);
 const title = ref('');
-const id_membership = ref(0);
-const form = useForm({ name: '', duration: '', price: 0.0 });
+const id_payment = ref(0);
+const form = useForm({ amount: '', date_buys: '', user_id: '', membership_id: ''});
 
-const openModal = (id, name, duration, price)=>{    
+const openModal = (id, amount, date_buys, user_id, membership_id)=>{    
     ventanamodal.value = true;
     nextTick(()=> nameInput.value.focus());
-    id_membership.value = id;
+    id_payment.value = id;
     if(id==0){
-        title.value = 'Crear Membresia';
+        title.value = 'Crear Pago';
     }else{        
-        title.value = 'Editar Membresia';
-        form.name = name;
-        form.duration = duration;
-        form.price = price;
+        title.value = 'Editar Pago';
+        form.amount = amount;
+        form.date_buys = date_buys;
+        form.user_id = user_id;
+        form.membership_id = membership_id;
     }
 }
 
 const save = ()=>{
-    if(id_membership.value==0){
-        form.post(route('memberships.store'), {
-            onSuccess: () => ok('Membresia creada'),
+    if(id_payment.value==0){
+        form.post(route('payments.store'), {
+            onSuccess: () => ok('Pago creado'),
             onError: (errors) => {
                 console.error(errors);
             },
         });        
     }else{
-        form.put(route('memberships.update', id_membership.value), {
-            onSuccess: () => ok('Membresia actualizada'), 
+        form.put(route('payments.update', id_payment.value), {
+            onSuccess: () => ok('Pago actualizado'), 
             onError: (errors) => {
                 console.error(errors);
             },
@@ -56,7 +60,7 @@ const save = ()=>{
 
 const closeModal = ()=>{
     ventanamodal.value = false;
-    id_membership.value = 0;
+    id_payment.value = 0;
     form.reset();
 }
 
@@ -76,7 +80,7 @@ const deleteClient = (id, name) => {
         cancelButtonText:'<i class="fa-solid fa-ban"></i> Cancelar',
     }).then((result) => {
         if(result.isConfirmed){
-            form.delete(route('memberships.destroy', id), {
+            form.delete(route('payments.destroy', id), {
                 onSuccess: ()=>{ok('Membresia eliminada')},
                 onError: (errors) => {
                     console.error(errors);
@@ -88,10 +92,10 @@ const deleteClient = (id, name) => {
 </script>
 
 <template>
-    <AuthenticatedLayout title="Lista de Membresias">
+    <AuthenticatedLayout title="Lista de Pagos">
         <template #header>           
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Lista de Membresias
+                Lista de Pagos
             </h2>
         </template>
 
@@ -101,7 +105,7 @@ const deleteClient = (id, name) => {
                     <div class="p-3 lg:p-8 flex justify-between border-b border-gray-200">                        
                         <PrimaryButton 
                             @click="$event => openModal(0)">
-                            <i class="fa-solid fa-plus-circle"></i> Agregar membresia
+                            <i class="fa-solid fa-plus-circle"></i> Agregar pago
                         </PrimaryButton>                    
                     </div>                    
                     <div class="bg-gray-200 bg-opacity-25 p-6 lg:p-8">
@@ -109,31 +113,36 @@ const deleteClient = (id, name) => {
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr class="border-gray-100">
                                     <th class="border border-gray-400 px-2 py-2">#</th>
-                                    <th class="border border-gray-400 px-2 py-2">Nombre</th>
-                                    <th class="border border-gray-400 px-2 py-2">Duración</th>
-                                    <th class="border border-gray-400 px-2 py-2">Precio</th>
+                                    <th class="border border-gray-400 px-2 py-2">Monto</th>
+                                    <th class="border border-gray-400 px-2 py-2">Fecha de compra</th>
+                                    <th class="border border-gray-400 px-2 py-2">Cliente</th>
+                                    <th class="border border-gray-400 px-2 py-2">Membresia</th>
                                     <th class="border border-gray-400 px-2 py-2 text-center" colspan="2">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="membership, i in memberships" :key="membership.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                <tr v-for="payment, i in payments.data" :key="payment.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                     <td class="border border-gray-400 px-2 py-2">{{i + 1}}</td>
-                                    <td class="border border-gray-400 px-2 py-2">{{membership.name}}</td>
-                                    <td class="border border-gray-400 px-2 py-2">{{membership.duration}}</td>
-                                    <td class="border border-gray-400 px-2 py-2">{{membership.price}}</td>
+                                    <td class="border border-gray-400 px-2 py-2">{{payment.amount}}</td>
+                                    <td class="border border-gray-400 px-2 py-2">{{payment.date_buys}}</td>
+                                    <td class="border border-gray-400 px-2 py-2">{{payment.user.name}}</td>
+                                    <td class="border border-gray-400 px-2 py-2">{{payment.membership.name}}</td>
                                     <td class="border border-gray-400 px-2 py-2">
-                                        <WarningButton @click="$event => openModal(membership.id, membership.name, membership.duration, membership.price)">
+                                        <WarningButton @click="$event => openModal(payment.id, payment.amount, payment.date_buys, payment.user_id, payment.membership_id)">
                                             <i class="fa-solid fa-edit"></i>
                                         </WarningButton>
                                     </td>
                                     <td class="border border-gray-400 px-2 py-2">
-                                        <DangerButton @click="$event => deleteClient(membership.id, membership.name)">
+                                        <DangerButton @click="$event => deleteClient(payment.id, payment.amount)">
                                             <i class="fa-solid fa-trash"></i>
                                         </DangerButton>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
+                    <div class="bg-white grid v-screen place-items-center py-3">
+                        <Paginator :paginator="payments" />
                     </div>
                 </div>
             </div>
@@ -149,43 +158,42 @@ const deleteClient = (id, name) => {
                 
             <div class="sm:flex">
                 <div class="p-3 basis-2/4">
-                    <InputLabel for="name" value="Nombre de la membresia:" />
+                    <InputLabel for="amount" value="Monto a pagar:" />
                     <TextInput 
-                        id="name"
-                        v-model="form.name"  ref="nameInput"
+                        id="amount"
+                        v-model="form.amount"  ref="nameInput"
                         type="text"
                         class="mt-1 block w-full"                   
-                        placeholder="Nombre de la membresia"
+                        placeholder="Monto a pagar"
                         required
                         autofocus
-                        autocomplete="name"
+                        autocomplete="amount"
                     />
-                    <InputError class="mt-2" :message="form.errors.name" />
+                    <InputError class="mt-2" :message="form.errors.amount" />
                 </div>
-                <div class="p-3 basis-1/4">
-                    <InputLabel for="duration" value="Duración:" />
+                <div class="p-3 basis-2/4">
+                    <InputLabel for="date_buys" value="Fecha de compra:" />
                     <TextInput 
-                        id="duration"
-                        v-model="form.duration"
-                        type="text"
-                        pattern="[0-9]"
+                        id="date_buys"
+                        v-model="form.date_buys"
+                        type="date"
                         class="mt-1 block w-full"                        
                         required
-                        placeholder="Solo numeros"
+                        placeholder=""
                     />
-                    <InputError class="mt-2" :message="form.errors.duration" />
+                    <InputError class="mt-2" :message="form.errors.date_buys" />
                 </div>
-                <div class="p-3 basis-1/4">
-                    <InputLabel for="price" value="Precio:" />
-                    <TextInput 
-                        id="price"
-                        v-model="form.price"
-                        type="text"
-                        class="mt-1 block w-full"                        
-                        required
-                        placeholder="Solo numeros"
-                    />
-                    <InputError class="mt-2" :message="form.errors.price" />
+            </div>
+            <div class="sm:flex">
+                <div class="p-3 basis-2/4">
+                    <InputLabel for="user_id" value="Cliente:" />
+                    <SelectInput :options="users"  v-model="form.user_id" />                    
+                    <InputError class="mt-2" :message="form.errors.user_id" />
+                </div>
+                <div class="p-3 basis-2/4">
+                    <InputLabel for="membership_id" value="Membresia:" />
+                    <SelectInput :options="memberships"  v-model="form.membership_id" />                    
+                    <InputError class="mt-2" :message="form.errors.membership_id" />
                 </div>                              
             </div>          
             <div class="p-3 mt-6 flex justify-between">

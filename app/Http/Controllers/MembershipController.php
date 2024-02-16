@@ -18,10 +18,12 @@ class MembershipController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',            
             'duration' => 'required|string',
+            'price' => 'required|numeric',
         ]);
         Membership::create([
             'name' => $request->input('name'),
             'duration' => $request->input('duration'),
+            'price' => $request->input('price'),
         ]);
 
         return Inertia::render('Memberships/Index', [
@@ -34,11 +36,13 @@ class MembershipController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',            
             'duration' => 'required|string',
+            'price' => 'required|numeric',
         ]);
         //$membership = Membership::findOrFail($id);
         $membership->update([
             'name' => $request->input('name'),
             'duration' => $request->input('duration'),
+            'price' => $request->input('price'),
         ]);
 
         return Inertia::render('Memberships/Index', [
