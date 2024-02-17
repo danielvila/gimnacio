@@ -18,7 +18,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $clients = User::select('*')->with('profile');
+        $clients = User::select('*')->with('profile')->role('Client');
         $q = "";
         if (request()->has("q")) {
             $q = request("q");
@@ -40,8 +40,6 @@ class ClientController extends Controller
             'phone' => 'required|max:15',
             'address' => 'string',
             'birthday' => 'nullable|date',
-            'date_of_purchase' => 'nullable|date',
-            'membership' => 'string',
         ]);
 
         DB::beginTransaction();
@@ -51,15 +49,13 @@ class ClientController extends Controller
                 'name' => $request->input('name'),
                 'email' => $request->input('email'),
                 'password' => Hash::make($request->input('password')),
-            ]);
+            ])->assignRole('Client');
 
             $profile = new Profile([
                 'cedula' => $request->input('cedula'),
                 'phone' => $request->input('phone'),
                 'address' => $request->input('address'),
                 'birthday' => $request->input('birthday'),
-                'date_of_purchase' => $request->input('date_of_purchase'),
-                'membership' => $request->input('membership'),
             ]);
             $user->profile()->save($profile);
 
@@ -83,8 +79,6 @@ class ClientController extends Controller
             'phone' => 'required|max:15',
             'address' => 'string',
             'birthday' => 'nullable|date',
-            'date_of_purchase' => 'nullable|date',
-            'membership' => 'string',
         ]);
         DB::beginTransaction();
 
@@ -99,8 +93,6 @@ class ClientController extends Controller
                 'phone' => $request->input('phone'),
                 'address' => $request->input('address'),
                 'birthday' => $request->input('birthday'),
-                'date_of_purchase' => $request->input('date_of_purchase'),
-                'membership' => $request->input('membership'),
             ]);
 
             DB::commit();

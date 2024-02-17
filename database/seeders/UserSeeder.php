@@ -28,7 +28,7 @@ class UserSeeder extends Seeder
                 'remember_token' => Str::random(10),
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]);
+            ])->assignRole('Admin');
             $fechaActual = now();
             $fechaAleatoria = $fechaActual->subYears(rand(20, 30));
             $profile = new Profile([
@@ -63,7 +63,7 @@ class UserSeeder extends Seeder
                 'remember_token' => Str::random(10),
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]);
+            ])->assignRole('Employee');
             $fechaActualj = now();
             $fechaAleatoriaj = $fechaActualj->subYears(rand(20, 30));
             $profilej = new Profile([

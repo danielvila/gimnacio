@@ -27,7 +27,7 @@ class ProfileSeeder extends Seeder
                 'remember_token' => Str::random(10),
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]);
+            ])->assignRole('Client');
             $fechaActual = now();
             $fechaAleatoria = $fechaActual->subYears(rand(20, 30));
             Profile::create([

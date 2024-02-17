@@ -95,7 +95,6 @@ const deleteClient = (id, name) => {
         cancelButtonText:'<i class="fa-solid fa-ban"></i> Cancelar',
     }).then((result) => {
         if(result.isConfirmed){
-            console.log('ruta para eliminar: ' + route('clients.destroy', id))
             form.delete(route('clients.destroy', id), {
                 onSuccess: ()=>{ok('Cliente eliminado')},
                 onError: (errors) => {
