@@ -17,7 +17,8 @@ import Swal from 'sweetalert2';
 const props = defineProps({
     users: {type:Object},
     roles: {type:Object},
-    q: {type:String}
+    q: {type:String},
+    autorized: {type:String}
 });
 const nameInput = ref(null);
 const ventanamodal = ref(false);
@@ -105,7 +106,7 @@ const deleteClient = (id, name) => {
 </script>
 
 <template>
-    <AuthenticatedLayout title="Lista de Usuarios">
+    <AuthenticatedLayout title="Lista de Usuarios" :autorized="autorized">
         <template #header>           
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Lista de Usuarios

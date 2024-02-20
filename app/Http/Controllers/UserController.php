@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Controller;
+
 use Illuminate\Http\Request;
 use App\Models\User;
-use App\Models\Membership;
 use Spatie\Permission\Models\Role;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
@@ -24,7 +25,7 @@ class UserController extends Controller
         $users = $users->paginate(10)->appends(request()->except(['page', 'client']));
         $roles = Role::select('id','name')->get();
        
-        return Inertia::render('Users/Index', ['users'=>$users, 'roles' => $roles, 'q' => $q]);
+        return Inertia::render('Users/Index', ['users'=>$users, 'roles' => $roles, 'q' => $q, 'autorized' => auth()->user()->roles()->first()->name]);
     }
 
     public function store(Request $request)

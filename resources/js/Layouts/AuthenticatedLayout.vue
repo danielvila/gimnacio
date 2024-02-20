@@ -7,7 +7,12 @@ import NavLink from '@/Components/NavLink.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link } from '@inertiajs/vue3';
 
+const props = defineProps({
+    autorized: {type:String}
+});
+
 const showingNavigationDropdown = ref(false);
+
 </script>
 
 <template>
@@ -32,14 +37,17 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
-                                <NavLink :href="route('clients.index')" :active="route().current('clients.index')">
+                                <NavLink v-if="autorized=='Employee'" :href="route('clients.index')" :active="route().current('clients.index')">
                                     Clientes
-                                </NavLink>
-                                <NavLink :href="route('memberships.index')" :active="route().current('memberships.index')">
-                                    Membresias
-                                </NavLink>
-                                <NavLink :href="route('payments.index')" :active="route().current('payments.index')">
+                                </NavLink>                                
+                                <NavLink v-if="autorized=='Employee'" :href="route('payments.index')" :active="route().current('payments.index')">
                                     Pagos
+                                </NavLink>
+                                <NavLink v-if="autorized=='Admin'" :href="route('memberships.index')" :active="route().current('memberships.index')">
+                                    Membresias 
+                                </NavLink>
+                                <NavLink v-if="autorized=='Admin'" :href="route('users.index')" :active="route().current('users.index')">
+                                    Usuarios
                                 </NavLink>
                             </div>
                         </div>

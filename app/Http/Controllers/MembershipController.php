@@ -10,7 +10,7 @@ class MembershipController extends Controller
 {
     public function index()
     {        
-        return Inertia::render('Memberships/Index', ['memberships'=> Membership::all()]);
+        return Inertia::render('Memberships/Index', ['memberships'=> Membership::all(), 'autorized' => auth()->user()->roles()->first()->name]);
     }
 
     public function store(Request $request)

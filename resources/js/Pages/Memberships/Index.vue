@@ -14,7 +14,8 @@ import { nextTick, ref } from 'vue';
 import Swal from 'sweetalert2';
 
 const props = defineProps({
-    memberships: {type:Object}
+    memberships: {type:Object},
+    autorized: {type:String}
 });
 const nameInput = ref(null);
 const ventanamodal = ref(false);
@@ -88,7 +89,7 @@ const deleteClient = (id, name) => {
 </script>
 
 <template>
-    <AuthenticatedLayout title="Lista de Membresias">
+    <AuthenticatedLayout title="Lista de Membresias" :autorized="autorized">
         <template #header>           
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Lista de Membresias

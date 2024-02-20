@@ -17,15 +17,17 @@ import Swal from 'sweetalert2';
 const props = defineProps({
     payments: {type:Object},
     memberships: {type:Object},
-    users: {type:Object}
+    payment_types: {type:Object},
+    users: {type:Object},
+    autorized: {type:String}
 });
 const nameInput = ref(null);
 const ventanamodal = ref(false);
 const title = ref('');
 const id_payment = ref(0);
-const form = useForm({ amount: '', date_buys: '', user_id: '', membership_id: ''});
+const form = useForm({ amount: '', date_buys: '', user_id: '', membership_id: '', payment_type_id: ''});
 
-const openModal = (id, amount, date_buys, user_id, membership_id)=>{    
+const openModal = (id, amount, date_buys, user_id, membership_id, payment_type)=>{    
     ventanamodal.value = true;
     nextTick(()=> nameInput.value.focus());
     id_payment.value = id;
@@ -37,6 +39,7 @@ const openModal = (id, amount, date_buys, user_id, membership_id)=>{
         form.date_buys = date_buys;
         form.user_id = user_id;
         form.membership_id = membership_id;
+        form.payment_type_id = payment_type;
     }
 }
 
@@ -89,10 +92,18 @@ const deleteClient = (id, name) => {
         }
     });
 }
+
+const costMembership = ()=>{
+    const membership = props.memberships.find(m => m.id === parseInt(form.membership_id, 10));
+
+    if (membership) {
+        form.amount = membership.price;
+    }
+}
 </script>
 
 <template>
-    <AuthenticatedLayout title="Lista de Pagos">
+    <AuthenticatedLayout title="Lista de Pagos" :autorized="autorized">
         <template #header>           
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Lista de Pagos
@@ -117,6 +128,7 @@ const deleteClient = (id, name) => {
                                     <th class="border border-gray-400 px-2 py-2">Fecha de compra</th>
                                     <th class="border border-gray-400 px-2 py-2">Cliente</th>
                                     <th class="border border-gray-400 px-2 py-2">Membresia</th>
+                                    <th class="border border-gray-400 px-2 py-2">Pago</th>
                                     <th class="border border-gray-400 px-2 py-2 text-center" colspan="2">Acciones</th>
                                 </tr>
                             </thead>
@@ -127,8 +139,9 @@ const deleteClient = (id, name) => {
                                     <td class="border border-gray-400 px-2 py-2">{{payment.date_buys}}</td>
                                     <td class="border border-gray-400 px-2 py-2">{{payment.user.name}}</td>
                                     <td class="border border-gray-400 px-2 py-2">{{payment.membership.name}}</td>
+                                    <td class="border border-gray-400 px-2 py-2">{{payment.payment_type.name}}</td>
                                     <td class="border border-gray-400 px-2 py-2">
-                                        <WarningButton @click="$event => openModal(payment.id, payment.amount, payment.date_buys, payment.user_id, payment.membership_id)">
+                                        <WarningButton @click="$event => openModal(payment.id, payment.amount, payment.date_buys, payment.user_id, payment.membership_id, payment.payment_type_id)">
                                             <i class="fa-solid fa-edit"></i>
                                         </WarningButton>
                                     </td>
@@ -187,15 +200,22 @@ const deleteClient = (id, name) => {
             <div class="sm:flex">
                 <div class="p-3 basis-2/4">
                     <InputLabel for="user_id" value="Cliente:" />
-                    <SelectInput :options="users"  v-model="form.user_id" />                    
+                    <SelectInput :options="users" v-model="form.user_id" />                    
                     <InputError class="mt-2" :message="form.errors.user_id" />
                 </div>
                 <div class="p-3 basis-2/4">
                     <InputLabel for="membership_id" value="Membresia:" />
-                    <SelectInput :options="memberships"  v-model="form.membership_id" />                    
+                    <SelectInput :options="memberships" v-model="form.membership_id" @change="costMembership"/>                    
                     <InputError class="mt-2" :message="form.errors.membership_id" />
                 </div>                              
-            </div>          
+            </div>
+            <div class="sm:flex">
+                <div class="p-3 basis-2/4">
+                    <InputLabel for="payment_type_id" value="Tipo de pago:" />
+                    <SelectInput :options="payment_types" v-model="form.payment_type_id" />                    
+                    <InputError class="mt-2" :message="form.errors.payment_type_id" />
+                </div>                                         
+            </div>            
             <div class="p-3 mt-6 flex justify-between">
                 <PrimaryButton :class="{ 'opacity-25': form.processing }" 
                     :disabled="form.processing" @click="save">

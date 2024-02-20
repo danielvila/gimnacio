@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Membership extends Model
+class PaymentType extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -16,6 +16,5 @@ class Membership extends Model
 
     protected $fillable = [
         'name',
-        'duration', 'price'
     ];
 }

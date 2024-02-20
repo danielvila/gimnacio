@@ -21,6 +21,10 @@ return new class extends Migration
             $table->unsignedBigInteger('membership_id');
             $table->foreign('membership_id')
                 ->references('id')->on('memberships')->onUpdate('cascade')->onDelete('restrict');
+            $table->unsignedBigInteger('payment_type_id');
+            $table->foreign('payment_type_id')
+                ->references('id')->on('payment_types')->onUpdate('cascade')->onDelete('restrict');               
+            $table->softDeletes();                
             $table->timestamps();
         });
     }

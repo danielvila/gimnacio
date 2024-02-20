@@ -27,11 +27,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('users', UserController::class)->only(['index','store','update','destroy']);
-    Route::resource('memberships', MembershipController::class)->except(['edit','show']);
-
     Route::resource('clients', ClientController::class);    
     Route::resource('payments', PaymentController::class);
+
+
+    Route::resource('users', UserController::class)->only(['index','store','update','destroy'])->middleware('can:users.index');
+    Route::resource('memberships', MembershipController::class)->except(['edit','show'])->middleware('can:memberships.index');
+ 
 });
 
 require __DIR__.'/auth.php';

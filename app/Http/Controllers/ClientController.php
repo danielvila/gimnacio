@@ -26,8 +26,8 @@ class ClientController extends Controller
         }
         $clients = $clients->paginate(5)->appends(request()->except(['page', 'client']));
         $memberships = Membership::select('id','name')->get();
-        
-        return Inertia::render('Clients/Index', ['clients'=>$clients, 'memberships' => $memberships, 'q' => $q]);
+
+        return Inertia::render('Clients/Index', ['clients'=>$clients, 'memberships' => $memberships, 'q' => $q, 'autorized' => auth()->user()->roles()->first()->name]);
     }
 
     public function store(Request $request)

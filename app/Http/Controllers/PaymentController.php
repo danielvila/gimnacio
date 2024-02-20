@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Payment;
 use App\Models\Membership;
+use App\Models\Payment;
+use App\Models\PaymentType;
 use App\Models\User;
 use Inertia\Inertia;
 
@@ -12,11 +13,15 @@ class PaymentController extends Controller
 {
     public function index()
     {   
-        $payments = Payment::with(['user', 'membership'])->paginate(10)->appends(request()->except(['page']));
-        $memberships = Membership::select('id','name')->get();
-        $users = User::select('id','name')->get();
-
-        return Inertia::render('Payments/Index', ['payments'=> $payments, 'memberships'=> $memberships, 'users'=> $users]);
+        $payments = Payment::with(['user', 'membership','payment_type'])->paginate(10)->appends(request()->except(['page']));
+        $memberships = Membership::select('id','name', 'price')->get();
+        $users = User::select('id','name')->with('profile')->role('Client')->get();
+        $payment_types = PaymentType::select('id','name')->get();
+        
+        return Inertia::render('Payments/Index', [
+                'payments'=> $payments, 'memberships'=> $memberships, 'payment_types' => $payment_types,
+                'users'=> $users, 'autorized' => auth()->user()->roles()->first()->name
+            ]);
     }
 
     public function store(Request $request)
