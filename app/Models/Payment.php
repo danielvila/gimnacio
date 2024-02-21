@@ -28,6 +28,6 @@ class Payment extends Model
     }
 
     protected $fillable = [
-        'amount', 'date_buys', 'user_id', 'membership_id',
+        'amount', 'date_buys', 'user_id', 'membership_id', 'payment_type_id'
     ];
 }

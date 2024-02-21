@@ -13,9 +13,9 @@ class PaymentController extends Controller
 {
     public function index()
     {   
-        $payments = Payment::with(['user', 'membership','payment_type'])->paginate(10)->appends(request()->except(['page']));
-        $memberships = Membership::select('id','name', 'price')->get();
-        $users = User::select('id','name')->with('profile')->role('Client')->get();
+        $payments = Payment::with(['user', 'membership','payment_type'])->orderByDesc('date_buys')->paginate(10)->appends(request()->except(['page']));
+        $memberships = Membership::all();
+        $users = User::select('id','name')->role('Client')->get();
         $payment_types = PaymentType::select('id','name')->get();
         
         return Inertia::render('Payments/Index', [
@@ -31,17 +31,25 @@ class PaymentController extends Controller
             'date_buys' => 'required',            
             'user_id' => 'required',
             'membership_id' => 'required',
+            'payment_type_id' => 'required',
         ]);
         Payment::create([
             'amount' => $request->input('amount'),
             'date_buys' => $request->input('date_buys'),
             'user_id' => $request->input('user_id'),
             'membership_id' => $request->input('membership_id'),
+            'payment_type_id' => $request->input('payment_type_id'),
         ]);
 
+        $payments = Payment::with(['user', 'membership','payment_type'])->orderByDesc('date_buys')->paginate(10)->appends(request()->except(['page']));
+        $memberships = Membership::select('id','name', 'price')->get();
+        $users = User::select('id','name')->with('profile')->role('Client')->get();
+        $payment_types = PaymentType::select('id','name')->get();
+        
         return Inertia::render('Payments/Index', [
-            'payments' => Payment::with(['user', 'membership'])->paginate(10)->appends(request()->except(['page']))
-        ]);
+                'payments'=> $payments, 'memberships'=> $memberships, 'payment_types' => $payment_types,
+                'users'=> $users, 'autorized' => auth()->user()->roles()->first()->name
+            ]);
     }
 
     public function update(Request $request, Payment $payment)
@@ -58,10 +66,17 @@ class PaymentController extends Controller
             'date_buys' => $request->input('date_buys'),
             'user_id' => $request->input('user_id'),
             'membership_id' => $request->input('membership_id'),
+            'payment_type_id' => $request->input('payment_type_id'),
         ]);     
  
+        $payments = Payment::with(['user', 'membership','payment_type'])->orderByDesc('date_buys')->paginate(10)->appends(request()->except(['page']));
+        $memberships = Membership::select('id','name', 'price')->get();
+        $users = User::select('id','name')->with('profile')->role('Client')->get();
+        $payment_types = PaymentType::select('id','name')->get();
+        
         return Inertia::render('Payments/Index', [
-            'payments' => Payment::with(['user', 'membership'])->paginate(10)->appends(request()->except(['page']))
-        ]);
+                'payments'=> $payments, 'memberships'=> $memberships, 'payment_types' => $payment_types,
+                'users'=> $users, 'autorized' => auth()->user()->roles()->first()->name
+            ]);
     }
 }

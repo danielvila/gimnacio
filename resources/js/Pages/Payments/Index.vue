@@ -25,6 +25,7 @@ const nameInput = ref(null);
 const ventanamodal = ref(false);
 const title = ref('');
 const id_payment = ref(0);
+const price_membership = ref('');
 const form = useForm({ amount: '', date_buys: '', user_id: '', membership_id: '', payment_type_id: ''});
 
 const openModal = (id, amount, date_buys, user_id, membership_id, payment_type)=>{    
@@ -33,6 +34,10 @@ const openModal = (id, amount, date_buys, user_id, membership_id, payment_type)=
     id_payment.value = id;
     if(id==0){
         title.value = 'Crear Pago';
+
+        const fechaActual = new Date();
+        const formatoFecha = fechaActual.toISOString().split('T')[0]; // Formato YYYY-MM-DD      
+        form.date_buys =  formatoFecha;
     }else{        
         title.value = 'Editar Pago';
         form.amount = amount;
@@ -40,6 +45,8 @@ const openModal = (id, amount, date_buys, user_id, membership_id, payment_type)=
         form.user_id = user_id;
         form.membership_id = membership_id;
         form.payment_type_id = payment_type;
+        costMembership();
+        calcularDiferencia();
     }
 }
 
@@ -97,8 +104,39 @@ const costMembership = ()=>{
     const membership = props.memberships.find(m => m.id === parseInt(form.membership_id, 10));
 
     if (membership) {
-        form.amount = membership.price;
+        price_membership.value = membership.price;
     }
+}
+
+const calcularDiferencia = (duration, date_buys)=> {
+    const fechaServidor = new Date(date_buys);
+    const fechaUsuario = new Date();
+    const diferenciaTiempo = fechaUsuario.getTime() - fechaServidor.getTime();
+    const diferenciaDias = Math.floor(diferenciaTiempo / (1000 * 60 * 60 * 24));
+    const diasrestantes = parseInt(duration, 10) - diferenciaDias;
+    if(diasrestantes < 0){
+        return 'Membresia vencida';
+    } else{
+        return diasrestantes;
+    }
+}
+
+const membreciavencida = (duration, date_buys)=> {
+    const fechaServidor = new Date(date_buys);
+    const fechaUsuario = new Date();
+    const diferenciaTiempo = fechaUsuario.getTime() - fechaServidor.getTime();
+    const diferenciaDias = Math.floor(diferenciaTiempo / (1000 * 60 * 60 * 24));
+    const diasrestantes = parseInt(duration, 10) - diferenciaDias;
+    if(diasrestantes < 0){
+        return true;
+    } else{
+        return false;
+    }
+}
+
+const calcSaldo = (price, pago)=> {
+    const saldo = Math.round((price - pago) * 100) / 100
+    return saldo;
 }
 </script>
 
@@ -124,21 +162,27 @@ const costMembership = ()=>{
                             <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                 <tr class="border-gray-100">
                                     <th class="border border-gray-400 px-2 py-2">#</th>
-                                    <th class="border border-gray-400 px-2 py-2">Monto</th>
-                                    <th class="border border-gray-400 px-2 py-2">Fecha de compra</th>
                                     <th class="border border-gray-400 px-2 py-2">Cliente</th>
                                     <th class="border border-gray-400 px-2 py-2">Membresia</th>
+                                    <th class="border border-gray-400 px-2 py-2">Precio</th>
                                     <th class="border border-gray-400 px-2 py-2">Pago</th>
+                                    <th class="border border-gray-400 px-2 py-2">saldo</th>
+                                    <th class="border border-gray-400 px-2 py-2">Fecha de compra</th>                                    
+                                    <th class="border border-gray-400 px-2 py-2">Días disponibles</th>
+                                    <th class="border border-gray-400 px-2 py-2">Tipo de pago</th>
                                     <th class="border border-gray-400 px-2 py-2 text-center" colspan="2">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="payment, i in payments.data" :key="payment.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                                <tr v-for="payment, i in payments.data" :key="payment.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700" >
                                     <td class="border border-gray-400 px-2 py-2">{{i + 1}}</td>
-                                    <td class="border border-gray-400 px-2 py-2">{{payment.amount}}</td>
-                                    <td class="border border-gray-400 px-2 py-2">{{payment.date_buys}}</td>
                                     <td class="border border-gray-400 px-2 py-2">{{payment.user.name}}</td>
                                     <td class="border border-gray-400 px-2 py-2">{{payment.membership.name}}</td>
+                                    <td class="border border-gray-400 px-2 py-2">{{payment.membership.price}}</td>
+                                    <td class="border border-gray-400 px-2 py-2">{{payment.amount}}</td>
+                                    <td class="border border-gray-400 px-2 py-2" :class="calcSaldo(payment.membership.price, payment.amount) > 0 ?'bg-red-600 text-white':''">{{ calcSaldo(payment.membership.price, payment.amount) }}</td>
+                                    <td class="border border-gray-400 px-2 py-2">{{payment.date_buys}}</td>
+                                    <td class="border border-gray-400 px-2 py-2" :class="membreciavencida(payment.membership.duration, payment.date_buys)==true?'bg-red-600 text-white':''">{{calcularDiferencia(payment.membership.duration, payment.date_buys)}}</td>
                                     <td class="border border-gray-400 px-2 py-2">{{payment.payment_type.name}}</td>
                                     <td class="border border-gray-400 px-2 py-2">
                                         <WarningButton @click="$event => openModal(payment.id, payment.amount, payment.date_buys, payment.user_id, payment.membership_id, payment.payment_type_id)">
@@ -168,21 +212,50 @@ const costMembership = ()=>{
                 </h2>               
             </div>
             <form @submit.prevent="save">
-                
+                <div class="sm:flex">
+                    <div class="p-3 basis-2/4">
+                        <InputLabel for="user_id" value="Cliente:" />
+                        <SelectInput :options="users" v-model="form.user_id" class="mt-1 block w-full"/>                    
+                        <InputError class="mt-2" :message="form.errors.user_id" />
+                    </div>
+                    <div class="p-3 basis-2/4">
+                        <InputLabel for="membership_id" value="Membresia:" />
+                        <SelectInput :options="memberships" v-model="form.membership_id" @change="costMembership" class="mt-1 block w-full"/>                    
+                        <InputError class="mt-2" :message="form.errors.membership_id" />
+                    </div>                              
+                </div>
+                <div class="sm:flex">
+                    <div class="p-3 basis-2/4">
+                        <span class="block font-medium text-sm text-gray-700">Costo de la membresia:</span>
+                        <TextInput 
+                            v-model="price_membership" 
+                            type="text"
+                            class="mt-1 block w-full"                   
+                            placeholder="Costo de la membresia"
+                            readonly
+                        />
+                    </div>
+                    <div class="p-3 basis-2/4">
+                        <InputLabel for="amount" value="Monto a pagar:" />
+                        <TextInput 
+                            id="amount"
+                            v-model="form.amount"  ref="nameInput"
+                            type="text"
+                            class="mt-1 block w-full"                   
+                            placeholder="Monto a pagar"
+                            required
+                            autofocus
+                            autocomplete="amount"
+                        />
+                        <InputError class="mt-2" :message="form.errors.amount" />
+                    </div>
+                </div>
+           
             <div class="sm:flex">
                 <div class="p-3 basis-2/4">
-                    <InputLabel for="amount" value="Monto a pagar:" />
-                    <TextInput 
-                        id="amount"
-                        v-model="form.amount"  ref="nameInput"
-                        type="text"
-                        class="mt-1 block w-full"                   
-                        placeholder="Monto a pagar"
-                        required
-                        autofocus
-                        autocomplete="amount"
-                    />
-                    <InputError class="mt-2" :message="form.errors.amount" />
+                    <InputLabel for="payment_type_id" value="Tipo de pago:" />
+                    <SelectInput :options="payment_types" v-model="form.payment_type_id" class="mt-1 block w-full"/>                    
+                    <InputError class="mt-2" :message="form.errors.payment_type_id" />
                 </div>
                 <div class="p-3 basis-2/4">
                     <InputLabel for="date_buys" value="Fecha de compra:" />
@@ -195,26 +268,7 @@ const costMembership = ()=>{
                         placeholder=""
                     />
                     <InputError class="mt-2" :message="form.errors.date_buys" />
-                </div>
-            </div>
-            <div class="sm:flex">
-                <div class="p-3 basis-2/4">
-                    <InputLabel for="user_id" value="Cliente:" />
-                    <SelectInput :options="users" v-model="form.user_id" />                    
-                    <InputError class="mt-2" :message="form.errors.user_id" />
-                </div>
-                <div class="p-3 basis-2/4">
-                    <InputLabel for="membership_id" value="Membresia:" />
-                    <SelectInput :options="memberships" v-model="form.membership_id" @change="costMembership"/>                    
-                    <InputError class="mt-2" :message="form.errors.membership_id" />
-                </div>                              
-            </div>
-            <div class="sm:flex">
-                <div class="p-3 basis-2/4">
-                    <InputLabel for="payment_type_id" value="Tipo de pago:" />
-                    <SelectInput :options="payment_types" v-model="form.payment_type_id" />                    
-                    <InputError class="mt-2" :message="form.errors.payment_type_id" />
-                </div>                                         
+                </div>                                        
             </div>            
             <div class="p-3 mt-6 flex justify-between">
                 <PrimaryButton :class="{ 'opacity-25': form.processing }" 
