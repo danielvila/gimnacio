@@ -17,17 +17,24 @@ import Swal from 'sweetalert2';
 const props = defineProps({
     clients: {type:Object},
     memberships: {type:Object},
+    payment_types: {type:Object},
     q: {type:String},
     autorized: {type:String}
 });
 const nameInput = ref(null);
 const ventanamodal = ref(false);
+const modalpay = ref(false);
 const updatepassword = ref(true);
+const name_user = ref('');
+const price_membership = ref('');
 const title = ref('');
 const id_client = ref(0);
+const id_userpayment = ref(0);
+
 const form = useForm({
     name: '', email: '', password: '', password_confirmation: '', cedula: '', phone: '', address: '', birthday: ''
 });
+const form_pay = useForm({ amount: '', date_buys: '', user_id: '', membership_id: '', payment_type_id: ''});
 const search = useForm({
     q: props.q
 });
@@ -42,6 +49,7 @@ const openModal = (id, name, email, cedula, phone, address, birthday)=>{
     id_client.value = id;
     if(id==0){
         title.value = 'Crear cliente';
+        form.birthday = currentDate();
     }else{        
         title.value = 'Editar cliente';
         form.name = name;
@@ -54,8 +62,25 @@ const openModal = (id, name, email, cedula, phone, address, birthday)=>{
     }
 }
 
+const openModalpay = (id, name)=>{    
+    modalpay.value = true;
+    id_userpayment.value = id;
+    if(id > 0){
+        name_user.value = name;
+        form_pay.user_id = id.toString();             
+        form_pay.date_buys =  currentDate();
+    }
+}
+
 const save = ()=>{
-    if(id_client.value==0){
+    if(id_userpayment.value > 0){
+        form_pay.post(route('payments.store'), {
+            onSuccess: () => ok('Pago creado'),
+            onError: (errors) => {
+                console.error(errors);
+            },
+        });        
+    }else if(id_client.value==0){
         form.post(route('clients.store'), {
             onSuccess: () => ok('Cliente creado'),
             //onFinish: () => closeModal(),    
@@ -63,7 +88,7 @@ const save = ()=>{
                 console.error(errors);
             },
         });        
-    }else{
+    }else if(id_client.value > 0){
         form.put(route('clients.update', id_client.value), {
             onSuccess: () => ok('Cliente actualizado'),
             onError: (errors) => {
@@ -78,13 +103,17 @@ const closeModal = ()=>{
     id_client.value = 0;
     updatepassword.value = true;
     form.reset();
+
+    modalpay.value = false;
+    id_userpayment.value = 0;
+    form_pay.reset();
 }
 
 const ok = (msj) => {
-    form.reset();
     closeModal();
     Swal.fire({title:msj, icon:'success'});
 }
+
 const deleteClient = (id, name) => {
     const alerta = Swal.mixin({
         buttonsStyling:true
@@ -105,6 +134,20 @@ const deleteClient = (id, name) => {
         }
     });
 }
+
+const currentDate = () =>{
+    const fechaActual = new Date();
+    const formatoFecha = fechaActual.toISOString().split('T')[0]; // Formato YYYY-MM-DD 
+    return formatoFecha;
+}
+
+const costMembership = ()=>{
+    const membership = props.memberships.find(m => m.id === parseInt(form_pay.membership_id, 10));
+
+    if (membership) {
+        price_membership.value = membership.price.toString();
+    }
+}
 </script>
 
 <template>
@@ -120,18 +163,17 @@ const deleteClient = (id, name) => {
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                     <div class="p-3 lg:p-8 flex justify-between border-b border-gray-200">
                         <div class="flex mr-3 w-full">
-                            <TextInput id="q"
+                            <TextInput id="q" title="Buscar por Nombre"
                                 type="text"
                                 class="mt-1 w-full mr-3"
                                 v-model="search.q"
                                 placeholder="Buscar por Nombre"
                             />
-                            <PrimaryButton @click="submit">
+                            <PrimaryButton @click="submit" title="Buscar cliente">
                                 <i class="fa-solid fa-search"></i> Buscar
                             </PrimaryButton> 
                         </div>
-                        <PrimaryButton 
-                            @click="$event => openModal(0)">
+                        <PrimaryButton @click="$event => openModal(0)" title="Agregar cliente">
                             <i class="fa-solid fa-plus-circle"></i> Agregar cliente
                         </PrimaryButton>                    
                     </div>                    
@@ -144,7 +186,7 @@ const deleteClient = (id, name) => {
                                     <th class="border border-gray-400 px-2 py-2">Email</th>
                                     <th class="border border-gray-400 px-2 py-2">Telefono</th>
                                     <th class="border border-gray-400 px-2 py-2">Fecha de cumpleaños</th>
-                                    <th class="border border-gray-400 px-2 py-2 text-center" colspan="2">Acciones</th>
+                                    <th class="border border-gray-400 px-2 py-2 text-center" colspan="3">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -157,12 +199,17 @@ const deleteClient = (id, name) => {
                                     <td class="border border-gray-400 px-2 py-2">
                                         <WarningButton @click="$event => openModal(client.id, client.name, 
                                             client.email, client.profile.cedula, client.profile.phone, 
-                                            client.profile.address, client.profile.birthday)">
+                                            client.profile.address, client.profile.birthday)" title="Editar cliente">
                                             <i class="fa-solid fa-edit"></i>
                                         </WarningButton>
                                     </td>
                                     <td class="border border-gray-400 px-2 py-2">
-                                        <DangerButton @click="$event => deleteClient(client.id, client.name)">
+                                        <WarningButton @click="$event => openModalpay(client.id, client.name)" title="Pagar membresia" class="bg-sky-500">
+                                            <i class="fa-regular fa-address-card"></i>
+                                        </WarningButton>
+                                    </td>
+                                    <td class="border border-gray-400 px-2 py-2">
+                                        <DangerButton @click="$event => deleteClient(client.id, client.name)" title="Eliminar cliente">
                                             <i class="fa-solid fa-trash"></i>
                                         </DangerButton>
                                     </td>
@@ -292,6 +339,92 @@ const deleteClient = (id, name) => {
            
                 <SecondaryButton :class="{ 'opacity-25': form.processing }" 
                     :disabled="form.processing" @click="closeModal">
+                    <i class="fa-solid fa-ban"></i> Cancelar
+                </SecondaryButton>
+            </div>
+            </form>
+        </Modal>
+        <Modal :show="modalpay" @close="closeModal">
+            <div class="sm:flex">                
+                <h2 class="p-3 text-lg font.medium text-gray-900">
+                    Crear pago                   
+                </h2>               
+            </div>
+            <form @submit.prevent="save">
+                <div class="sm:flex">
+                    <div class="p-3 basis-2/4">
+                        <InputLabel for="user_id" value="Cliente:" />
+                        <TextInput 
+                            v-model="name_user" 
+                            type="text"
+                            class="mt-1 block w-full" 
+                            readonly
+                        />
+                        <TextInput 
+                            v-model="form_pay.user_id" 
+                            type="hidden"
+                        />
+                    </div>
+                    <div class="p-3 basis-2/4">
+                        <InputLabel for="membership_id" value="Membresia:" />
+                        <SelectInput :options="memberships" v-model="form_pay.membership_id" @change="costMembership" class="mt-1 block w-full"/>                    
+                        <InputError class="mt-2" :message="form_pay.errors.membership_id" />
+                    </div>                              
+                </div>
+                <div class="sm:flex">
+                    <div class="p-3 basis-2/4">
+                        <span class="block font-medium text-sm text-gray-700">Costo de la membresia:</span>
+                        <TextInput 
+                            v-model="price_membership" 
+                            type="text"
+                            class="mt-1 block w-full"                   
+                            placeholder="Costo de la membresia"
+                            readonly
+                        />
+                    </div>
+                    <div class="p-3 basis-2/4">
+                        <InputLabel for="amount" value="Monto a pagar:" />
+                        <TextInput 
+                            id="amount"
+                            v-model="form_pay.amount"  ref="nameInput"
+                            type="text"
+                            class="mt-1 block w-full"                   
+                            placeholder="Monto a pagar"
+                            required
+                            autofocus
+                            autocomplete="amount"
+                        />
+                        <InputError class="mt-2" :message="form_pay.errors.amount" />
+                    </div>
+                </div>
+           
+            <div class="sm:flex">
+                <div class="p-3 basis-2/4">
+                    <InputLabel for="payment_type_id" value="Tipo de pago:" />
+                    <SelectInput :options="payment_types" v-model="form_pay.payment_type_id" class="mt-1 block w-full"/>                    
+                    <InputError class="mt-2" :message="form_pay.errors.payment_type_id" />
+                </div>
+                <div class="p-3 basis-2/4">
+                    <InputLabel for="date_buys" value="Fecha de compra:" />
+                    <TextInput 
+                        id="date_buys"
+                        v-model="form_pay.date_buys"
+                        type="date"
+                        class="mt-1 block w-full"                        
+                        required
+                        placeholder=""
+                    />
+                    <InputError class="mt-2" :message="form_pay.errors.date_buys" />
+                </div>                                        
+            </div>            
+            <div class="p-3 mt-6 flex justify-between">
+                <PrimaryButton :class="{ 'opacity-25': form_pay.processing }" 
+                    :disabled="form_pay.processing" @click="save">
+                    <i class="fa-solid fa-save"></i> Guardar
+                </PrimaryButton>            
+           
+                <SecondaryButton :class="{ 'opacity-25': form_pay.processing }" 
+                    :disabled="form_pay.processing" @click="closeModal">
                     <i class="fa-solid fa-ban"></i> Cancelar
                 </SecondaryButton>
             </div>

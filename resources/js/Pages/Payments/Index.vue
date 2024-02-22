@@ -29,8 +29,7 @@ const price_membership = ref('');
 const form = useForm({ amount: '', date_buys: '', user_id: '', membership_id: '', payment_type_id: ''});
 
 const openModal = (id, amount, date_buys, user_id, membership_id, payment_type)=>{    
-    ventanamodal.value = true;
-    nextTick(()=> nameInput.value.focus());
+    ventanamodal.value = true;    
     id_payment.value = id;
     if(id==0){
         title.value = 'Crear Pago';
@@ -38,7 +37,8 @@ const openModal = (id, amount, date_buys, user_id, membership_id, payment_type)=
         const fechaActual = new Date();
         const formatoFecha = fechaActual.toISOString().split('T')[0]; // Formato YYYY-MM-DD      
         form.date_buys =  formatoFecha;
-    }else{        
+    }else{
+        nextTick(()=> nameInput.value.focus());    
         title.value = 'Editar Pago';
         form.amount = amount;
         form.date_buys = date_buys;

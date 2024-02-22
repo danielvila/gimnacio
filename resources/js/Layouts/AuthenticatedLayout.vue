@@ -37,10 +37,10 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
-                                <NavLink v-if="autorized=='Employee'" :href="route('clients.index')" :active="route().current('clients.index')">
+                                <NavLink v-if="autorized=='Employee' || autorized=='Admin'" :href="route('clients.index')" :active="route().current('clients.index')">
                                     Clientes
                                 </NavLink>                                
-                                <NavLink v-if="autorized=='Employee'" :href="route('payments.index')" :active="route().current('payments.index')">
+                                <NavLink v-if="autorized=='Employee' || autorized=='Admin'" :href="route('payments.index')" :active="route().current('payments.index')">
                                     Pagos
                                 </NavLink>
                                 <NavLink v-if="autorized=='Admin'" :href="route('memberships.index')" :active="route().current('memberships.index')">

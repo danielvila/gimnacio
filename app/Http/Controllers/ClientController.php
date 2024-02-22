@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Membership;
 use App\Models\User;
+use App\Models\PaymentType;
 use App\Models\Profile;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
@@ -25,9 +26,13 @@ class ClientController extends Controller
             $clients->where('name', 'like', '%'.$q.'%');
         }
         $clients = $clients->paginate(5)->appends(request()->except(['page', 'client']));
-        $memberships = Membership::select('id','name')->get();
+        $memberships = Membership::all();
+        $payment_types = PaymentType::select('id','name')->get();
 
-        return Inertia::render('Clients/Index', ['clients'=>$clients, 'memberships' => $memberships, 'q' => $q, 'autorized' => auth()->user()->roles()->first()->name]);
+        return Inertia::render('Clients/Index', [ 'clients'=>$clients, 
+                'memberships' => $memberships, 'payment_types' => $payment_types, 
+                'q' => $q, 'autorized' => auth()->user()->roles()->first()->name
+            ]);
     }
 
     public function store(Request $request)

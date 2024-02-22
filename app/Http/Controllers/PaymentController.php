@@ -18,8 +18,8 @@ class PaymentController extends Controller
         $users = User::select('id','name')->role('Client')->get();
         $payment_types = PaymentType::select('id','name')->get();
         
-        return Inertia::render('Payments/Index', [
-                'payments'=> $payments, 'memberships'=> $memberships, 'payment_types' => $payment_types,
+        return Inertia::render('Payments/Index', [ 'payments'=> $payments,
+                'memberships'=> $memberships, 'payment_types' => $payment_types,
                 'users'=> $users, 'autorized' => auth()->user()->roles()->first()->name
             ]);
     }
