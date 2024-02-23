@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ConcurrenceController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\UserController;
@@ -27,12 +28,14 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::resource('clients', ClientController::class);    
-    Route::resource('payments', PaymentController::class);
+    $not_route = ['edit', 'create', 'show'];
+    Route::resource('clients', ClientController::class)->except($not_route)->middleware('can:clients.index');
+    Route::resource('concurrences', ConcurrenceController::class)->only(['index','store','update']);   
+    Route::resource('payments', PaymentController::class)->except($not_route)->middleware('can:payments.index');
 
 
     Route::resource('users', UserController::class)->only(['index','store','update','destroy'])->middleware('can:users.index');
-    Route::resource('memberships', MembershipController::class)->except(['edit','show'])->middleware('can:memberships.index');
+    Route::resource('memberships', MembershipController::class)->except($not_route)->middleware('can:memberships.index');
  
 });
 

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('payments', function (Blueprint $table) {
             $table->id();
             $table->float('amount', 8, 2);
-            $table->timestamp('date_buys');
+            $table->date('date_buys');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')
                 ->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');

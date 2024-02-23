@@ -11,15 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('profiles', function (Blueprint $table) {
+        Schema::create('concurrences', function (Blueprint $table) {
             $table->id();
-            $table->string('cedula')->nullable(); 
-            $table->string('phone', 15)->nullable();
-            $table->string('address', 255)->nullable();
-            $table->date('birthday')->nullable();          
-            $table->unsignedBigInteger('user_id')->unique();
+            $table->timestamp('entry_time');
+            $table->timestamp('departure_time')->nullable();
+            $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')
                 ->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
+            $table->softDeletes();                 
             $table->timestamps();
         });
     }
@@ -29,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('profiles');
+        Schema::dropIfExists('concurrences');
     }
 };

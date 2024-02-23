@@ -35,9 +35,8 @@ const form = useForm({
     name: '', email: '', password: '', password_confirmation: '', cedula: '', phone: '', address: '', birthday: ''
 });
 const form_pay = useForm({ amount: '', date_buys: '', user_id: '', membership_id: '', payment_type_id: ''});
-const search = useForm({
-    q: props.q
-});
+const form_concurrence = useForm({ entry_time: '', departure_time: '', user_id: '' });
+const search = useForm({ q: props.q });
 
 const submit = ()=>{
     search.get(route('clients.index'));
@@ -70,6 +69,16 @@ const openModalpay = (id, name)=>{
         form_pay.user_id = id.toString();             
         form_pay.date_buys =  currentDate();
     }
+}
+
+const saveConcurrence = (id,) => {
+    form_concurrence.user_id = id;
+    form_concurrence.post(route('concurrences.store'), {
+        onSuccess: () => ok('Entrada agregada'),
+        onError: (errors) => {
+            console.error(errors);
+        },
+    });
 }
 
 const save = ()=>{
@@ -107,6 +116,7 @@ const closeModal = ()=>{
     modalpay.value = false;
     id_userpayment.value = 0;
     form_pay.reset();
+    form_concurrence.reset();
 }
 
 const ok = (msj) => {
@@ -186,7 +196,7 @@ const costMembership = ()=>{
                                     <th class="border border-gray-400 px-2 py-2">Email</th>
                                     <th class="border border-gray-400 px-2 py-2">Telefono</th>
                                     <th class="border border-gray-400 px-2 py-2">Fecha de cumpleaños</th>
-                                    <th class="border border-gray-400 px-2 py-2 text-center" colspan="3">Acciones</th>
+                                    <th class="border border-gray-400 px-2 py-2 text-center" colspan="4">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -206,6 +216,11 @@ const costMembership = ()=>{
                                     <td class="border border-gray-400 px-2 py-2">
                                         <WarningButton @click="$event => openModalpay(client.id, client.name)" title="Pagar membresia" class="bg-sky-500">
                                             <i class="fa-regular fa-address-card"></i>
+                                        </WarningButton>
+                                    </td>
+                                    <td class="border border-gray-400 px-2 py-2">
+                                        <WarningButton @click="$event => saveConcurrence(client.id)" title="Agregar asistencia" class="bg-sky-500">
+                                            <i class="fa-regular fa-clock"></i>
                                         </WarningButton>
                                     </td>
                                     <td class="border border-gray-400 px-2 py-2">

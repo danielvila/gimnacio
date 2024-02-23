@@ -23,11 +23,10 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\Payment');
     }
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    public function concurrences(){
+        return $this->hasMany('App\Models\Concurrence');
+    }
+
     protected $fillable = [
         'name', 'email', 'password', 
     ];

@@ -13,7 +13,7 @@ class PaymentSeeder extends Seeder
 {
     public function run(): void
     {
-        $clients = User::select('id')->with('profile')->role('Client')->get();
+        $clients = User::select('id')->role('Client')->get();
 
         $membership = Membership::all();
         $m = count($membership);
