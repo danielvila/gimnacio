@@ -70,9 +70,7 @@ class ClientController extends Controller
             return response()->json(['error' => 'Error en la inserción'], 500);
         }
  
-        return Inertia::render('Clients/Index', [
-            'clients' => User::with('profile')->paginate(5)->appends(request()->except(['page', 'client']))
-        ]);
+        return to_route('clients.index');
     }
 
     public function update(Request $request, $client)
@@ -106,17 +104,13 @@ class ClientController extends Controller
             return response()->json(['error' => 'Error en la inserción'], 500);
         }            
  
-        return Inertia::render('Clients/Index', [
-            'clients' => User::with('profile')->paginate(5)->appends(request()->except(['page', 'client']))
-        ]);
+       return to_route('clients.index');
     }
 
     public function destroy($client)
     {
         $user = User::with('profile')->findOrFail($client);
         $user->delete();
-        return Inertia::render('Clients/Index', [
-            'clients' => User::with('profile')->paginate(5)->appends(request()->except(['page', 'client']))
-        ]);
+        return to_route('clients.index');
     }
 }

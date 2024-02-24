@@ -12,7 +12,7 @@ const props = defineProps({
 });
 const form = useForm({ entry_time: '', departure_time: '', user_id: ''});
 
-const ok = (msj) => {
+const ok = (msj) => {   
     Swal.fire({title:msj, icon:'success'});
     form.reset();
 }
@@ -33,6 +33,9 @@ const saveConcurrence = (id,) => {
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Lista de Asistencia
             </h2>
+            <div v-if="$page.props.flash.message" class="alert">
+                {{ ok($page.props.flash.message) }}
+            </div>
         </template>
 
         <div class="py-12">

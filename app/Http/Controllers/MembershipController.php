@@ -26,9 +26,7 @@ class MembershipController extends Controller
             'price' => $request->input('price'),
         ]);
 
-        return Inertia::render('Memberships/Index', [
-            'memberships' => Membership::all()
-        ]);
+        return to_route('memberships.index');
     }
 
     public function update(Request $request, Membership $membership)
@@ -45,17 +43,13 @@ class MembershipController extends Controller
             'price' => $request->input('price'),
         ]);
 
-        return Inertia::render('Memberships/Index', [
-            'memberships' => Membership::all()
-        ]);
+        return to_route('memberships.index');
     }
 
     public function destroy(Membership $membership)
     {
         //$membership = Membership::findOrFail($id);
         $membership->delete();
-        return Inertia::render('Memberships/Index', [
-            'memberships' => Membership::all()
-        ]);
+        return to_route('memberships.index');
     }
 }
