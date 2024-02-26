@@ -17,11 +17,15 @@ class ProfileSeeder extends Seeder
 
     public function run(): void
     {
-        for ($i=0; $i < 25; $i++) { 
-        
+        for ($i=0; $i < 25; $i++) {
+            $username = '';
+            do {
+                $username = fake()->unique()->regexify('[a-zA-Z]{6}');
+            } while (User::where('username', $username)->exists());
             $client = User::create([
                 'name' => fake()->name(),
                 'email' => fake()->unique()->safeEmail(),
+                'username' => $username,
                 'email_verified_at' => now(),
                 'password' =>  static::$password ??= Hash::make('enero2050'), 
                 'remember_token' => Str::random(10),

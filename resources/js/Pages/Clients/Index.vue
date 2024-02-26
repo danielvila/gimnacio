@@ -416,36 +416,36 @@ const costMembership = ()=>{
                     </div>
                 </div>
            
-            <div class="sm:flex">
-                <div class="p-3 basis-2/4">
-                    <InputLabel for="payment_type_id" value="Tipo de pago:" />
-                    <SelectInput :options="payment_types" v-model="form_pay.payment_type_id" class="mt-1 block w-full"/>                    
-                    <InputError class="mt-2" :message="form_pay.errors.payment_type_id" />
+                <div class="sm:flex">
+                    <div class="p-3 basis-2/4">
+                        <InputLabel for="payment_type_id" value="Tipo de pago:" />
+                        <SelectInput :options="payment_types" v-model="form_pay.payment_type_id" class="mt-1 block w-full"/>                    
+                        <InputError class="mt-2" :message="form_pay.errors.payment_type_id" />
+                    </div>
+                    <div class="p-3 basis-2/4">
+                        <InputLabel for="date_buys" value="Fecha de compra:" />
+                        <TextInput 
+                            id="date_buys"
+                            v-model="form_pay.date_buys"
+                            type="date"
+                            class="mt-1 block w-full"                        
+                            required
+                            placeholder=""
+                        />
+                        <InputError class="mt-2" :message="form_pay.errors.date_buys" />
+                    </div>                                        
+                </div>            
+                <div class="p-3 mt-6 flex justify-between">
+                    <PrimaryButton :class="{ 'opacity-25': form_pay.processing }" 
+                        :disabled="form_pay.processing" @click="save">
+                        <i class="fa-solid fa-save"></i> Guardar
+                    </PrimaryButton>            
+               
+                    <SecondaryButton :class="{ 'opacity-25': form_pay.processing }" 
+                        :disabled="form_pay.processing" @click="closeModal">
+                        <i class="fa-solid fa-ban"></i> Cancelar
+                    </SecondaryButton>
                 </div>
-                <div class="p-3 basis-2/4">
-                    <InputLabel for="date_buys" value="Fecha de compra:" />
-                    <TextInput 
-                        id="date_buys"
-                        v-model="form_pay.date_buys"
-                        type="date"
-                        class="mt-1 block w-full"                        
-                        required
-                        placeholder=""
-                    />
-                    <InputError class="mt-2" :message="form_pay.errors.date_buys" />
-                </div>                                        
-            </div>            
-            <div class="p-3 mt-6 flex justify-between">
-                <PrimaryButton :class="{ 'opacity-25': form_pay.processing }" 
-                    :disabled="form_pay.processing" @click="save">
-                    <i class="fa-solid fa-save"></i> Guardar
-                </PrimaryButton>            
-           
-                <SecondaryButton :class="{ 'opacity-25': form_pay.processing }" 
-                    :disabled="form_pay.processing" @click="closeModal">
-                    <i class="fa-solid fa-ban"></i> Cancelar
-                </SecondaryButton>
-            </div>
             </form>
         </Modal>
     </AuthenticatedLayout>

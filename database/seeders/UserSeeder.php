@@ -20,9 +20,14 @@ class UserSeeder extends Seeder
     {        
         DB::beginTransaction();
         try {
+            $username = '';
+            do {
+                $username = fake()->unique()->regexify('[a-zA-Z]{6}');
+            } while (User::where('username', $username)->exists());
             $daniel = User::create([
                 'name' => 'daniel',
                 'email' => 'daniel@test.com',
+                'username' => $username,
                 'email_verified_at' => now(),
                 'password' => Hash::make('enero2050'), 
                 'remember_token' => Str::random(10),
@@ -55,9 +60,14 @@ class UserSeeder extends Seeder
         ]);*/
             
         try {
+            $username = '';
+            do {
+                $username = fake()->unique()->regexify('[a-zA-Z]{6}');
+            } while (User::where('username', $username)->exists());
            $jose = User::create([
                 'name' => 'jose',
                 'email' => 'jose@test.com',
+                'username' => $username,
                 'email_verified_at' => now(),
                 'password' => '$2y$10$wItjvHmUHEZt0HwuacDj5OP7w2rGIq8jioE0TppXL./GqP/7uKmrW', // enero2050
                 'remember_token' => Str::random(10),

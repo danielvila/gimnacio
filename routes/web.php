@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientController;
+use App\Http\Controllers\ClientgymController;
 use App\Http\Controllers\ConcurrenceController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\PaymentController;
@@ -9,16 +10,9 @@ use App\Http\Controllers\PaymentTypeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-Route::get('/', function () {
-    return Inertia::render('Welcome', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-});
+Route::resource('/', ClientgymController::class)->only(['index','store'])->names('home');
+Route::put('/{concurrence}', [ClientgymController::class, 'update'])->name('home.update');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', ['autorized' => auth()->user()->roles()->first()->name]);
