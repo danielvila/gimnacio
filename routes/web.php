@@ -10,6 +10,7 @@ use App\Http\Controllers\PaymentTypeController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
+use Inertia\Inertia;
 
 Route::resource('/', ClientgymController::class)->only(['index','store'])->names('home');
 Route::put('/{concurrence}', [ClientgymController::class, 'update'])->name('home.update');
@@ -24,13 +25,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     $not_route = ['edit', 'create', 'show'];
-    Route::resource('clients', ClientController::class)->except($not_route)->middleware('can:clients.index');
-    Route::resource('concurrences', ConcurrenceController::class)->only(['index','store','update']);   
+    Route::resource('clients', ClientController::class)->except( ['edit', 'create'])->middleware('can:clients.index');
+    Route::resource('concurrences', ConcurrenceController::class)->only(['index','store'])->middleware('can:concurrences.index');   
     Route::resource('payments', PaymentController::class)->except($not_route)->middleware('can:payments.index');
+    Route::resource('paymentypes', PaymentTypeController::class)->except($not_route)->middleware('can:paymentypes.index');
 
-
-    Route::resource('users', UserController::class)->except($not_route)->middleware('can:users.index');
-    Route::resource('paymentypes', PaymentTypeController::class)->except($not_route);
+    Route::resource('users', UserController::class)->except($not_route)->middleware('can:users.index');    
     Route::resource('memberships', MembershipController::class)->except($not_route)->middleware('can:memberships.index');
  
 });

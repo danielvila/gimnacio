@@ -35,7 +35,7 @@ const form = useForm({
     name: '', email: '', password: '', password_confirmation: '', cedula: '', phone: '', address: '', birthday: ''
 });
 const form_pay = useForm({ amount: '', date_buys: '', user_id: '', membership_id: '', payment_type_id: ''});
-const form_concurrence = useForm({ entry_time: '', departure_time: '', user_id: '', to_redirect: 'clients.index' });
+const form_concurrence = useForm({ user_id: '', to_redirect: 'clients.index' });
 const search = useForm({ q: props.q });
 
 const submit = ()=>{
@@ -74,7 +74,7 @@ const openModalpay = (id, name)=>{
 const saveConcurrence = (id,) => {
     form_concurrence.user_id = id;
     form_concurrence.post(route('concurrences.store'), {
-        onSuccess: () => {},
+        onSuccess: () => ok('Entrada agregada'),
         onError: (errors) => {
             console.error(errors);
         },
@@ -166,9 +166,6 @@ const costMembership = ()=>{
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Lista de Clientes
             </h2>
-            <div v-if="$page.props.flash.message" class="alert">
-                {{ ok($page.props.flash.message) }}
-            </div>
         </template>
 
         <div class="py-12">

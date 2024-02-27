@@ -10,7 +10,7 @@ const props = defineProps({
     concurrences: {type:Object},
     autorized: {type:String}
 });
-const form = useForm({ entry_time: '', departure_time: '', user_id: ''});
+const form = useForm({ to_redirect: 'concurrences.index'});
 
 const ok = (msj) => {   
     Swal.fire({title:msj, icon:'success'});
@@ -18,7 +18,7 @@ const ok = (msj) => {
 }
 
 const saveConcurrence = (id,) => {
-    form.put(route('concurrences.update', id), {
+    form.put(route('home.update', id), {
         onSuccess: () => ok('Salida agregada'),
         onError: (errors) => {
             console.error(errors);

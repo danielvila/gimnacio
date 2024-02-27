@@ -45,23 +45,19 @@ class ConcurrenceController extends Controller
                     'entry_time' => now(),            
                     'user_id' => $request->input('user_id'),
                 ]);
-                $datos['message'] = '¡Entrada registrada!';
             }else{
-                $datos['message'] = '¡No tiene membresia activa!';                            
+                return redirect()->route($ruta)
+                    ->withErrors([
+                        'revisa' => '¡No tiene membresia activa!',
+                    ]);                           
             }
         } else {
-            $datos['message'] = '¡Debe comprar una membresia!'; 
+            return redirect()->route($ruta)
+                    ->withErrors([
+                        'revisa' => '¡Debe comprar una membresia!',
+                    ]);
         } 
 
-        return to_route($ruta)->with($datos);
-    }
-
-    public function update(Request $request, Concurrence $concurrence)
-    {
-        $concurrence->update([
-            'departure_time' => now(),
-        ]); 
-
-        return to_route('concurrences.index');
+        return to_route($ruta);
     }
 }

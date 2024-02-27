@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Concurrence;
 use App\Models\Membership;
-use App\Models\User;
+use App\Models\Payment;
 use App\Models\PaymentType;
 use App\Models\Profile;
-use Inertia\Inertia;
+use App\Models\User;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Inertia\Inertia;
 
 class ClientController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
     public function index()
     {
         $clients = User::select('*')->with('profile')->role('Client');
@@ -32,6 +32,18 @@ class ClientController extends Controller
         return Inertia::render('Clients/Index', [ 'clients'=>$clients, 
                 'memberships' => $memberships, 'payment_types' => $payment_types, 
                 'q' => $q, 'autorized' => auth()->user()->roles()->first()->name
+            ]);
+    }
+
+    public function show(User $client)
+    {
+        $full_client = User::with(['profile', 'concurrences'])->findOrFail($client->id);
+        $payments = Payment::with(['membership','payment_type'])->where('user_id', $client->id)->orderByDesc('date_buys')->paginate(5)->appends(request()->except(['page']));
+        $concurrences = Concurrence::where('user_id', $client->id)->orderByDesc('entry_time')->paginate(5)->appends(request()->except(['page']));
+ 
+        return Inertia::render('Clients/Show', [ 'full_client'=>$full_client, 
+                'payments'=>$payments, 'concurrences'=>$concurrences,
+                'autorized' => auth()->user()->roles()->first()->name
             ]);
     }
 

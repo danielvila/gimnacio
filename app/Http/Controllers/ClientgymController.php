@@ -81,10 +81,14 @@ class ClientgymController extends Controller
 
     public function update(Request $request, Concurrence $concurrence)
     {
+        $ruta = 'home.index';
+        if ($request->input('to_redirect') !== null && !empty($request->input('to_redirect'))) {
+            $ruta = $request->input('to_redirect');
+        }
         $concurrence->update([
             'departure_time' => now(),
-        ]); 
+        ]);
 
-        return to_route('home.index');
+        return to_route($ruta);
     }
 }
