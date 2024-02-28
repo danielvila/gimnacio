@@ -15,9 +15,21 @@ class ConcurrenceController extends Controller
      */
     public function index()
     {
-        $concurrences = Concurrence::where('departure_time', null)->with('user')->orderByDesc('entry_time')->paginate(10)->appends(request()->except(['page']));
+        $concurrences = Concurrence::select('*',)->with('user')->orderByDesc('entry_time');
+        $date_concurrence = "local";
+        if (request()->has("date_concurrence")) {            
+            $date_concurrence = request("date_concurrence");
+        }
+        if ($date_concurrence === "salieron") {
+            $concurrences->whereNotNull('departure_time');
+        }elseif ($date_concurrence === "local") {
+            $concurrences->whereNull('departure_time');
+        }  
+       
+        $concurrences = $concurrences->paginate(10)->appends(request()->except(['page']));
                 
         return Inertia::render('Concurrences/Index', [ 'concurrences'=> $concurrences,
+                'date_concurrence'=> $date_concurrence,
                 'autorized' => auth()->user()->roles()->first()->name
             ]);
     }

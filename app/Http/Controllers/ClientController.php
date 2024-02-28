@@ -19,13 +19,13 @@ class ClientController extends Controller
 {
     public function index()
     {
-        $clients = User::select('*')->with('profile')->role('Client');
+        $clients = User::select('*')->with('profile')->role('Client')->orderBy('name');
         $q = "";
         if (request()->has("q")) {
             $q = request("q");
             $clients->where('name', 'like', '%'.$q.'%');
         }
-        $clients = $clients->paginate(5)->appends(request()->except(['page', 'client']));
+        $clients = $clients->paginate(10)->appends(request()->except(['page', 'client']));
         $memberships = Membership::all();
         $payment_types = PaymentType::select('id','name')->get();
 
@@ -38,8 +38,8 @@ class ClientController extends Controller
     public function show(User $client)
     {
         $full_client = User::with(['profile', 'concurrences'])->findOrFail($client->id);
-        $payments = Payment::with(['membership','payment_type'])->where('user_id', $client->id)->orderByDesc('date_buys')->paginate(5)->appends(request()->except(['page']));
-        $concurrences = Concurrence::where('user_id', $client->id)->orderByDesc('entry_time')->paginate(5)->appends(request()->except(['page']));
+        $payments = Payment::with(['membership','payment_type'])->where('user_id', $client->id)->orderByDesc('date_buys')->paginate(10)->appends(request()->except(['page']));
+        $concurrences = Concurrence::where('user_id', $client->id)->orderByDesc('entry_time')->paginate(10)->appends(request()->except(['page']));
  
         return Inertia::render('Clients/Show', [ 'full_client'=>$full_client, 
                 'payments'=>$payments, 'concurrences'=>$concurrences,

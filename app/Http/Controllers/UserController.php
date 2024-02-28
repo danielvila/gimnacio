@@ -50,10 +50,8 @@ class UserController extends Controller
             DB::rollback();
             return response()->json(['error' => 'Error en la inserción'], 500);
         }
- 
-        return Inertia::render('Users/Index', [
-            'users' => User::with('roles')->paginate(10)->appends(request()->except(['page']))
-        ]);
+        
+        return to_route('users.index');
     }
 
     public function update(Request $request, User $user)
@@ -77,16 +75,12 @@ class UserController extends Controller
             return response()->json(['error' => 'Error en la inserción'], 500);
         }            
  
-        return Inertia::render('Users/Index', [
-            'users' => User::with('roles')->paginate(10)->appends(request()->except(['page']))
-        ]);
+        return to_route('users.index');
     }
 
     public function destroy(User $user)
     {
         $user->delete();
-        return Inertia::render('Users/Index', [
-            'users' => User::with('roles')->paginate(10)->appends(request()->except(['page']))
-        ]);
+        return to_route('users.index');
     }
 }

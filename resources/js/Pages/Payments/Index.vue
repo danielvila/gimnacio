@@ -11,14 +11,16 @@ import SelectInput from '@/Components/SelectInput.vue';
 import TextInput from '@/Components/TextInput.vue';
 import WarningButton from '@/Components/WarningButton.vue';
 import { Head, useForm } from '@inertiajs/vue3';
-import { nextTick, ref } from 'vue';
+import { nextTick, onMounted, ref } from 'vue';
 import Swal from 'sweetalert2';
 
 const props = defineProps({
     payments: {type:Object},
+    date_start: {type:String},
+    date_end: {type:String},
     memberships: {type:Object},
     payment_types: {type:Object},
-    users: {type:Object},
+    users: {type:Object},    
     autorized: {type:String}
 });
 const nameInput = ref(null);
@@ -26,7 +28,22 @@ const ventanamodal = ref(false);
 const title = ref('');
 const id_payment = ref(0);
 const price_membership = ref('');
+
 const form = useForm({ amount: '', date_buys: '', user_id: '', membership_id: '', payment_type_id: ''});
+const search = useForm({ date_start: props.date_start, date_end: props.date_end });
+
+const submit = ()=>{
+    search.get(route('payments.index'));
+}
+onMounted(() => {
+    search.date_start = currentDate(props.date_start);
+    search.date_end = currentDate(props.date_end);
+});
+const currentDate = (lafecha) =>{
+    const fechaActual = new Date(lafecha);
+    const formatoFecha = fechaActual.toISOString().split('T')[0]; // Formato YYYY-MM-DD 
+    return formatoFecha;
+}
 
 const openModal = (id, amount, date_buys, user_id, membership_id, payment_type)=>{    
     ventanamodal.value = true;    
@@ -79,7 +96,7 @@ const ok = (msj) => {
     closeModal();
     Swal.fire({title:msj, icon:'success'});
 }
-const deleteClient = (id, name) => {
+const deletePayment = (id, name) => {
     const alerta = Swal.mixin({
         buttonsStyling:true
     });
@@ -128,15 +145,10 @@ const membreciavencida = (duration, date_buys)=> {
     const diferenciaDias = Math.floor(diferenciaTiempo / (1000 * 60 * 60 * 24));
     const diasrestantes = parseInt(duration, 10) - diferenciaDias;
     if(diasrestantes < 0){
-        return true;
+        return 'bg-red-600 text-white';
     } else{
-        return false;
+        return '';
     }
-}
-
-const calcSaldo = (price, pago)=> {
-    const saldo = Math.round((price - pago) * 100) / 100
-    return saldo;
 }
 </script>
 
@@ -151,11 +163,36 @@ const calcSaldo = (price, pago)=> {
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                    <div class="p-3 lg:p-8 flex justify-between border-b border-gray-200">                        
-                        <PrimaryButton 
-                            @click="$event => openModal(0)">
-                            <i class="fa-solid fa-plus-circle"></i> Agregar pago
-                        </PrimaryButton>                    
+                    <div class="p-3 lg:p-8 flex items-center justify-between border-b border-gray-200">                        
+                        <div class=" flex items-center p-3 basis-1/4">
+                            <InputLabel for="date_start" value="Desde:" />
+                            <TextInput 
+                                id="date_start"
+                                v-model="search.date_start"
+                                type="date"
+                                class="ml-1 block w-full" 
+                            />
+                        </div>  
+                        <div class=" flex items-center p-3 basis-1/4">
+                            <InputLabel for="date_end" value="Hasta:" />
+                            <TextInput 
+                                id="date_end"
+                                v-model="search.date_end"
+                                type="date"
+                                class="ml-1 block w-full"  
+                            />
+                        </div>
+                        <div class=" basis-1/4">
+                            <PrimaryButton @click="submit" title="Buscar cliente">
+                                <i class="fa-solid fa-search"></i> Buscar
+                            </PrimaryButton>
+                        </div>
+                        <div class="grid justify-items-end basis-1/4">
+                            <PrimaryButton 
+                                @click="$event => openModal(0)">
+                                <i class="fa-solid fa-plus-circle"></i> Agregar pago
+                            </PrimaryButton> 
+                        </div>                   
                     </div>                    
                     <div class="bg-gray-200 bg-opacity-25 p-6 lg:p-8">
                         <table class="w-full border text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -164,9 +201,7 @@ const calcSaldo = (price, pago)=> {
                                     <th class="border border-gray-400 px-2 py-2">#</th>
                                     <th class="border border-gray-400 px-2 py-2">Cliente</th>
                                     <th class="border border-gray-400 px-2 py-2">Membresia</th>
-                                    <th class="border border-gray-400 px-2 py-2">Precio</th>
                                     <th class="border border-gray-400 px-2 py-2">Pago</th>
-                                    <th class="border border-gray-400 px-2 py-2">saldo</th>
                                     <th class="border border-gray-400 px-2 py-2">Fecha de compra</th>                                    
                                     <th class="border border-gray-400 px-2 py-2">Días disponibles</th>
                                     <th class="border border-gray-400 px-2 py-2">Tipo de pago</th>
@@ -178,11 +213,9 @@ const calcSaldo = (price, pago)=> {
                                     <td class="border border-gray-400 px-2 py-2">{{i + 1}}</td>
                                     <td class="border border-gray-400 px-2 py-2">{{payment.user.name}}</td>
                                     <td class="border border-gray-400 px-2 py-2">{{payment.membership.name}}</td>
-                                    <td class="border border-gray-400 px-2 py-2">{{payment.membership.price}}</td>
-                                    <td class="border border-gray-400 px-2 py-2">{{payment.amount}}</td>
-                                    <td class="border border-gray-400 px-2 py-2" :class="calcSaldo(payment.membership.price, payment.amount) > 0 ?'bg-red-600 text-white':''">{{ calcSaldo(payment.membership.price, payment.amount) }}</td>
+                                    <td class="border border-gray-400 px-2 py-2">{{payment.amount}}</td>                                   
                                     <td class="border border-gray-400 px-2 py-2">{{payment.date_buys}}</td>
-                                    <td class="border border-gray-400 px-2 py-2" :class="membreciavencida(payment.membership.duration, payment.date_buys)==true?'bg-red-600 text-white':''">{{calcularDiferencia(payment.membership.duration, payment.date_buys)}}</td>
+                                    <td class="border border-gray-400 px-2 py-2" :class="membreciavencida(payment.membership.duration, payment.date_buys)">{{calcularDiferencia(payment.membership.duration, payment.date_buys)}}</td>
                                     <td class="border border-gray-400 px-2 py-2">{{payment.payment_type.name}}</td>
                                     <td class="border border-gray-400 px-2 py-2">
                                         <WarningButton @click="$event => openModal(payment.id, payment.amount, payment.date_buys, payment.user_id, payment.membership_id, payment.payment_type_id)">
@@ -190,7 +223,7 @@ const calcSaldo = (price, pago)=> {
                                         </WarningButton>
                                     </td>
                                     <td class="border border-gray-400 px-2 py-2">
-                                        <DangerButton @click="$event => deleteClient(payment.id, payment.amount)">
+                                        <DangerButton @click="$event => deletePayment(payment.id, payment.amount)">
                                             <i class="fa-solid fa-trash"></i>
                                         </DangerButton>
                                     </td>

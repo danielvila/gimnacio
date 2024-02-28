@@ -1,15 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import DangerButton from '@/Components/DangerButton.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import Modal from '@/Components/Modal.vue';
 import Paginator from "@/Components/Paginator.vue";
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import SelectInput from '@/Components/SelectInput.vue';
-import TextInput from '@/Components/TextInput.vue';
-import WarningButton from '@/Components/WarningButton.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
 import Swal from 'sweetalert2';
@@ -20,59 +11,11 @@ const props = defineProps({
     concurrences: {type:Object},
     autorized: {type:String}
 });
-const nameInput = ref(null);
-const ventanamodal = ref(false);
-const modalpay = ref(false);
-const updatepassword = ref(true);
-const name_user = ref('');
-const price_membership = ref('');
-const title = ref('');
-const id_client = ref(0);
-const id_userpayment = ref(0);
-
-const form = useForm({
-    name: '', email: '', password: '', password_confirmation: '', cedula: '', phone: '', address: '', birthday: ''
-});
-const form_pay = useForm({ amount: '', date_buys: '', user_id: '', membership_id: '', payment_type_id: ''});
-const form_concurrence = useForm({ user_id: '', to_redirect: 'clients.index' });
-const search = useForm({ q: props.q });
-
-const closeModal = ()=>{
-    ventanamodal.value = false;
-    id_client.value = 0;
-    updatepassword.value = true;
-    form.reset();
-
-    modalpay.value = false;
-    id_userpayment.value = 0;
-    form_pay.reset();
-    form_concurrence.reset();
-}
-
-const ok = (msj) => {
-    closeModal();
-    Swal.fire({title:msj, icon:'success'});
-}
 
 const currentDate = () =>{
     const fechaActual = new Date();
     const formatoFecha = fechaActual.toISOString().split('T')[0]; // Formato YYYY-MM-DD 
     return formatoFecha;
-}
-
-const costMembership = ()=>{
-    const membership = props.memberships.find(m => m.id === parseInt(form_pay.membership_id, 10));
-
-    if (membership) {
-        price_membership.value = membership.price.toString();
-    }
-}
-
-
-
-const calcSaldo = (price, pago)=> {
-    const saldo = Math.round((price - pago) * 100) / 100
-    return saldo;
 }
 
 const calcularDiferencia = (duration, date_buys)=> {
@@ -95,50 +38,10 @@ const membreciavencida = (duration, date_buys)=> {
     const diferenciaDias = Math.floor(diferenciaTiempo / (1000 * 60 * 60 * 24));
     const diasrestantes = parseInt(duration, 10) - diferenciaDias;
     if(diasrestantes < 0){
-        return true;
+        return 'bg-red-600 text-white';
     } else{
-        return false;
+        return '';
     }
-}
-
-const openModal = (id, name, email, cedula, phone, address, birthday)=>{    
-    ventanamodal.value = true;
-    nextTick(()=> nameInput.value.focus());
-    id_client.value = id;
-    if(id==0){
-        title.value = 'Crear cliente';
-        form.birthday = currentDate();
-    }else{        
-        title.value = 'Editar cliente';
-        form.name = name;
-        form.email = email;
-        form.cedula = cedula;
-        form.phone = phone;
-        form.address = address;
-        form.birthday = birthday;
-        updatepassword.value = false;
-    }
-}
-
-const deleteClient = (id, name) => {
-    const alerta = Swal.mixin({
-        buttonsStyling:true
-    });
-    alerta.fire({
-        title:'Seguro que quiere eliminar: '+name+'?',
-        icon:'question', showCancelButton: true,
-        confirmButtonText:'<i class="fa-solid fa-check"></i> Si, eliminar',
-        cancelButtonText:'<i class="fa-solid fa-ban"></i> Cancelar',
-    }).then((result) => {
-        if(result.isConfirmed){
-            form.delete(route('clients.destroy', id), {
-                onSuccess: ()=>{ok('Cliente eliminado')},
-                onError: (errors) => {
-                    console.error(errors);
-                },
-            });
-        }
-    });
 }
 </script>
 <script>
@@ -184,36 +87,21 @@ const deleteClient = (id, name) => {
                                         <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
                                             <tr class="border-gray-100">
                                                 <th class="border border-gray-400 px-2 py-2">#</th>
-                                                <th class="border border-gray-400 px-2 py-2">Membresia</th>
-                                                <th class="border border-gray-400 px-2 py-2">Precio</th>
-                                                <th class="border border-gray-400 px-2 py-2">Pago</th>
-                                                <th class="border border-gray-400 px-2 py-2">saldo</th>
-                                                <th class="border border-gray-400 px-2 py-2">Fecha de compra</th>                                    
-                                                <th class="border border-gray-400 px-2 py-2">Días disponibles</th>
-                                                <th class="border border-gray-400 px-2 py-2">Tipo de pago</th>
-                                                <th class="border border-gray-400 px-2 py-2 text-center" colspan="2">Acciones</th>
+                                                <th class="border border-gray-400 px-2 ">Membresia</th>
+                                                <th class="border border-gray-400 px-2 ">Pago</th>
+                                                <th class="border border-gray-400 px-2 ">Fecha de compra</th>                                    
+                                                <th class="border border-gray-400 px-2 " width="150">Días disponibles</th>
+                                                <th class="border border-gray-400 px-2 ">Tipo de pago</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr v-for="payment, i in payments.data" :key="payment.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                                                 <td class="border border-gray-400 px-2 py-2">{{i + 1}}</td>
-                                                <td class="border border-gray-400 px-2 py-2">{{payment.membership.name}}</td>
-                                                <td class="border border-gray-400 px-2 py-2">{{payment.membership.price}}</td>
-                                                <td class="border border-gray-400 px-2 py-2">{{payment.amount}}</td>
-                                                <td class="border border-gray-400 px-2 py-2" :class="calcSaldo(payment.membership.price, payment.amount) > 0 ?'bg-red-600 text-white':''">{{ calcSaldo(payment.membership.price, payment.amount) }}</td>
-                                                <td class="border border-gray-400 px-2 py-2">{{payment.date_buys}}</td>
-                                                <td class="border border-gray-400 px-2 py-2" :class="membreciavencida(payment.membership.duration, payment.date_buys)==true?'bg-red-600 text-white':''">{{calcularDiferencia(payment.membership.duration, payment.date_buys)}}</td>
-                                                <td class="border border-gray-400 px-2 py-2">{{payment.payment_type.name}}</td>
-                                                <td class="border border-gray-400 px-2 py-2">
-                                                    <WarningButton @click="$event => openModal(payment.id, payment.amount, payment.date_buys, payment.user_id, payment.membership_id, payment.payment_type_id)">
-                                                        <i class="fa-solid fa-edit"></i>
-                                                    </WarningButton>
-                                                </td>
-                                                <td class="border border-gray-400 px-2 py-2">
-                                                    <DangerButton @click="$event => deleteClient(payment.id, payment.amount)">
-                                                        <i class="fa-solid fa-trash"></i>
-                                                    </DangerButton>
-                                                </td>
+                                                <td class="border border-gray-400 px-2 ">{{payment.membership.name}}</td>
+                                                <td class="border border-gray-400 px-2 ">{{payment.amount}}</td>                                                
+                                                <td class="border border-gray-400 px-2 ">{{payment.date_buys}}</td>
+                                                <td class="border border-gray-400 px-2 " :class="membreciavencida(payment.membership.duration, payment.date_buys)">{{calcularDiferencia(payment.membership.duration, payment.date_buys)}}</td>
+                                                <td class="border border-gray-400 px-2 ">{{payment.payment_type.name}}</td>
                                             </tr>
                                         </tbody>
                                     </table>

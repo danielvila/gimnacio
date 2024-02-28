@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import DangerButton from '@/Components/DangerButton.vue';
+import SelectInput from '@/Components/SelectInput.vue';
 import Paginator from "@/Components/Paginator.vue";
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
@@ -8,9 +9,20 @@ import Swal from 'sweetalert2';
 
 const props = defineProps({
     concurrences: {type:Object},
+    date_concurrence: {type:String},
     autorized: {type:String}
 });
+const date_concurrences = [
+  { id: 'local', name: 'En local' },
+  { id: 'salieron', name: 'Ya salieron' },
+  { id: 'all', name: 'Todos' }
+];
 const form = useForm({ to_redirect: 'concurrences.index'});
+const search = useForm({ date_concurrence: props.date_concurrence });
+
+const submit = ()=>{
+    search.get(route('concurrences.index'));
+}
 
 const ok = (msj) => {   
     Swal.fire({title:msj, icon:'success'});
@@ -41,10 +53,11 @@ const saveConcurrence = (id,) => {
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                    <div class="p-3 lg:p-8 flex justify-between border-b border-gray-200">                        
-                        <DangerButton >
-                            <i class="fa-solid fa-plus-circle"></i> Otras funciones
-                        </DangerButton>                    
+                    <div class="p-3 lg:p-8 flex justify-between border-b border-gray-200">
+                        <div class="p-3 basis-2/4">
+                            <InputLabel for="date_concurrence" value="Cliente:" />
+                            <SelectInput :options="date_concurrences" v-model="search.date_concurrence"  @change="submit" class="mt-1 block w-full"/>
+                        </div>
                     </div>                    
                     <div class="bg-gray-200 bg-opacity-25 p-6 lg:p-8">
                         <table class="w-full border text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">

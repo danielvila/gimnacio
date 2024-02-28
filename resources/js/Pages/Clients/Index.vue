@@ -10,7 +10,7 @@ import SecondaryButton from '@/Components/SecondaryButton.vue';
 import SelectInput from '@/Components/SelectInput.vue';
 import TextInput from '@/Components/TextInput.vue';
 import WarningButton from '@/Components/WarningButton.vue';
-import { Head, useForm } from '@inertiajs/vue3';
+import { Head, Link, useForm } from '@inertiajs/vue3';
 import { nextTick, ref } from 'vue';
 import Swal from 'sweetalert2';
 
@@ -124,27 +124,6 @@ const ok = (msj) => {
     Swal.fire({title:msj, icon:'success'});
 }
 
-const deleteClient = (id, name) => {
-    const alerta = Swal.mixin({
-        buttonsStyling:true
-    });
-    alerta.fire({
-        title:'Seguro que quiere eliminar: '+name+'?',
-        icon:'question', showCancelButton: true,
-        confirmButtonText:'<i class="fa-solid fa-check"></i> Si, eliminar',
-        cancelButtonText:'<i class="fa-solid fa-ban"></i> Cancelar',
-    }).then((result) => {
-        if(result.isConfirmed){
-            form.delete(route('clients.destroy', id), {
-                onSuccess: ()=>{ok('Cliente eliminado')},
-                onError: (errors) => {
-                    console.error(errors);
-                },
-            });
-        }
-    });
-}
-
 const currentDate = () =>{
     const fechaActual = new Date();
     const formatoFecha = fechaActual.toISOString().split('T')[0]; // Formato YYYY-MM-DD 
@@ -214,18 +193,18 @@ const costMembership = ()=>{
                                         </WarningButton>
                                     </td>
                                     <td class="border border-gray-400 px-2 py-2">
+                                        <Link :href="route('clients.show', client.id)" class="inline-flex items-center px-4 py-2 bg-sky-400 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-sky-500 focus:bg-sky-500 active:bg-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:ring-offset-2 transition ease-in-out duration-150" title="Historial">
+                                            <i class="fa-regular fa-file-lines"></i> 
+                                        </Link>
+                                    </td>
+                                    <td class="border border-gray-400 px-2 py-2">
                                         <WarningButton @click="$event => openModalpay(client.id, client.name)" title="Pagar membresia" class="bg-sky-500">
                                             <i class="fa-regular fa-address-card"></i>
                                         </WarningButton>
                                     </td>
                                     <td class="border border-gray-400 px-2 py-2">
-                                        <WarningButton @click="$event => saveConcurrence(client.id)" title="Agregar asistencia" class="bg-sky-500">
+                                        <DangerButton @click="$event => saveConcurrence(client.id)" title="Agregar asistencia" class="bg-sky-500">
                                             <i class="fa-regular fa-clock"></i>
-                                        </WarningButton>
-                                    </td>
-                                    <td class="border border-gray-400 px-2 py-2">
-                                        <DangerButton @click="$event => deleteClient(client.id, client.name)" title="Eliminar cliente">
-                                            <i class="fa-solid fa-trash"></i>
                                         </DangerButton>
                                     </td>
                                 </tr>
