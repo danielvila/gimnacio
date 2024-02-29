@@ -24,12 +24,17 @@ class PaymentSeeder extends Seeder
         foreach ($clients as $client) {
             $ship = rand(0, ($m - 1));
             $pago = rand(0, ($p - 1));
+            
             $fechaInicio = now();
             $mesesAtras = rand(1, 12);
-            $fechaInicio->subMonths($mesesAtras);           
+            $fechaInicio->subMonths($mesesAtras);
+            $fechaFin = $fechaInicio->clone();
+            $fechaFin->addDays($membership[$ship]->duration);
+                   
             Payment::create([
                 'amount' => $membership[$ship]->price, 
-                'date_buys' => $fechaInicio, 
+                'date_buys' => $fechaInicio,
+                'date_buys_end' => $fechaFin, 
                 'user_id' => $client->id, 
                 'membership_id' => $membership[$ship]->id,
                 'payment_type_id' => $payment_type[$pago]->id,

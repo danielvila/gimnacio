@@ -19,7 +19,8 @@ class DatabaseSeeder extends Seeder
             ProfileSeeder::class,
             PaymentTypeSeeder::class,
             PaymentSeeder::class,
-            ConcurrenceSeeder::class
+            ConcurrenceSeeder::class,
+            RoutineSeeder::class
         ]);        
     }
 }

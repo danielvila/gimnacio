@@ -7,6 +7,7 @@ use App\Http\Controllers\ConcurrenceController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentTypeController;
+use App\Http\Controllers\RoutineController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('concurrences', ConcurrenceController::class)->only(['index','store'])->middleware('can:concurrences.index');   
     Route::resource('payments', PaymentController::class)->except($not_route)->middleware('can:payments.index');
     Route::resource('paymentypes', PaymentTypeController::class)->except($not_route)->middleware('can:paymentypes.index');
+    Route::resource('routines', RoutineController::class)->except($not_route);
 
     Route::resource('users', UserController::class)->except($not_route)->middleware('can:users.index');    
     Route::resource('memberships', MembershipController::class)->except($not_route)->middleware('can:memberships.index');

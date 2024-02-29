@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Payment extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
     public function user(){
         return $this->belongsTo('App\Models\User');
@@ -26,8 +26,12 @@ class Payment extends Model
     {
         return \Carbon\Carbon::create($value)->format("Y-m-d");
     }
+     public function getDateBuysEndAttribute($value)
+    {
+        return \Carbon\Carbon::create($value)->format("Y-m-d");
+    }
 
     protected $fillable = [
-        'amount', 'date_buys', 'user_id', 'membership_id', 'payment_type_id'
+        'amount', 'date_buys', 'date_buys_end', 'user_id', 'membership_id', 'payment_type_id'
     ];
 }

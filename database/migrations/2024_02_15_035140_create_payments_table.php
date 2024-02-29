@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->float('amount', 8, 2);
             $table->date('date_buys');
+            $table->date('date_buys_end');
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')
                 ->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');

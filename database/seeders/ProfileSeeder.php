@@ -18,6 +18,10 @@ class ProfileSeeder extends Seeder
     public function run(): void
     {
         for ($i=0; $i < 25; $i++) {
+            $elrol = 'Client';
+            if($i < 3){
+                $elrol = 'Coach';
+            }
             $username = '';
             do {
                 $username = fake()->unique()->regexify('[a-zA-Z]{6}');
@@ -31,7 +35,7 @@ class ProfileSeeder extends Seeder
                 'remember_token' => Str::random(10),
                 'created_at' => now(),
                 'updated_at' => now(),
-            ])->assignRole('Client');
+            ])->assignRole($elrol);
             $fechaActual = now();
             $fechaAleatoria = $fechaActual->subYears(rand(20, 30));
             Profile::create([

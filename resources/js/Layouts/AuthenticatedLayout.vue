@@ -46,6 +46,9 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink v-if="autorized=='Employee' || autorized=='Admin'" :href="route('concurrences.index')" :active="route().current('concurrences.index')">
                                     Asistencias
                                 </NavLink>
+                                <NavLink v-if="autorized=='Employee' || autorized=='Admin'" :href="route('routines.index')" :active="route().current('routines.index')">
+                                    Rutinas 
+                                </NavLink>
                                 <NavLink v-if="autorized=='Employee' || autorized=='Admin'" :href="route('paymentypes.index')" :active="route().current('paymentypes.index')">
                                     Tipos de pago 
                                 </NavLink>

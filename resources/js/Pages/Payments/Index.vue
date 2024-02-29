@@ -125,19 +125,6 @@ const costMembership = ()=>{
     }
 }
 
-const calcularDiferencia = (duration, date_buys)=> {
-    const fechaServidor = new Date(date_buys);
-    const fechaUsuario = new Date();
-    const diferenciaTiempo = fechaUsuario.getTime() - fechaServidor.getTime();
-    const diferenciaDias = Math.floor(diferenciaTiempo / (1000 * 60 * 60 * 24));
-    const diasrestantes = parseInt(duration, 10) - diferenciaDias;
-    if(diasrestantes < 0){
-        return 'Membresia vencida';
-    } else{
-        return diasrestantes;
-    }
-}
-
 const membreciavencida = (duration, date_buys)=> {
     const fechaServidor = new Date(date_buys);
     const fechaUsuario = new Date();
@@ -202,8 +189,8 @@ const membreciavencida = (duration, date_buys)=> {
                                     <th class="border border-gray-400 px-2 py-2">Cliente</th>
                                     <th class="border border-gray-400 px-2 py-2">Membresia</th>
                                     <th class="border border-gray-400 px-2 py-2">Pago</th>
-                                    <th class="border border-gray-400 px-2 py-2">Fecha de compra</th>                                    
-                                    <th class="border border-gray-400 px-2 py-2">Días disponibles</th>
+                                    <th class="border border-gray-400 px-2 py-2">Fecha de compra</th>
+                                    <th class="border border-gray-400 px-2 py-2">Vence compra</th>
                                     <th class="border border-gray-400 px-2 py-2">Tipo de pago</th>
                                     <th class="border border-gray-400 px-2 py-2 text-center" colspan="2">Acciones</th>
                                 </tr>
@@ -215,7 +202,7 @@ const membreciavencida = (duration, date_buys)=> {
                                     <td class="border border-gray-400 px-2 py-2">{{payment.membership.name}}</td>
                                     <td class="border border-gray-400 px-2 py-2">{{payment.amount}}</td>                                   
                                     <td class="border border-gray-400 px-2 py-2">{{payment.date_buys}}</td>
-                                    <td class="border border-gray-400 px-2 py-2" :class="membreciavencida(payment.membership.duration, payment.date_buys)">{{calcularDiferencia(payment.membership.duration, payment.date_buys)}}</td>
+                                    <td class="border border-gray-400 px-2 py-2" :class="membreciavencida(payment.membership.duration, payment.date_buys)">{{payment.date_buys_end}}</td>                                    
                                     <td class="border border-gray-400 px-2 py-2">{{payment.payment_type.name}}</td>
                                     <td class="border border-gray-400 px-2 py-2">
                                         <WarningButton @click="$event => openModal(payment.id, payment.amount, payment.date_buys, payment.user_id, payment.membership_id, payment.payment_type_id)">
