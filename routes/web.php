@@ -8,6 +8,7 @@ use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\PaymentTypeController;
 use App\Http\Controllers\RoutineController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -26,6 +27,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     $not_route = ['edit', 'create', 'show'];
+    Route::resource('schedules', ScheduleController::class)->except($not_route);
+
     Route::resource('clients', ClientController::class)->except( ['edit', 'create'])->middleware('can:clients.index');
     Route::resource('concurrences', ConcurrenceController::class)->only(['index','store'])->middleware('can:concurrences.index');   
     Route::resource('payments', PaymentController::class)->except($not_route)->middleware('can:payments.index');

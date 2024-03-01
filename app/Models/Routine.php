@@ -10,6 +10,10 @@ class Routine extends Model
 {
     use HasFactory, SoftDeletes;
 
+    public function schudeles(){
+        return $this->hasMany('App\Models\Schedule');
+    }
+
     protected $fillable = [
         'name', 'description', 
     ];

@@ -27,6 +27,10 @@ class User extends Authenticatable
         return $this->hasMany('App\Models\Concurrence');
     }
 
+    public function schudeles(){
+        return $this->hasMany('App\Models\Schedule');
+    }
+
     protected $fillable = [
         'name', 'email', 'password', 
     ];

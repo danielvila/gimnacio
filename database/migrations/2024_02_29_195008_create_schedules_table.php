@@ -11,15 +11,18 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('profiles', function (Blueprint $table) {
+        Schema::create('schedules', function (Blueprint $table) {
             $table->id();
-            $table->string('cedula')->nullable(); 
-            $table->string('phone', 15)->nullable();
-            $table->text('address')->nullable();
-            $table->date('birthday')->nullable();          
-            $table->unsignedBigInteger('user_id')->unique();
+            $table->integer('day_of_week');
+            $table->time('hour', $precision = 0);
+            $table->text('description')->nullable();
+            $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')
                 ->references('id')->on('users')->onUpdate('cascade')->onDelete('restrict');
+            $table->unsignedBigInteger('routine_id');
+            $table->foreign('routine_id')
+                ->references('id')->on('routines')->onUpdate('cascade')->onDelete('restrict');                
+            $table->softDeletes(); 
             $table->timestamps();
         });
     }
@@ -29,6 +32,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('profiles');
+        Schema::dropIfExists('schedules');
     }
 };

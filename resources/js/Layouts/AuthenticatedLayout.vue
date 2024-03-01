@@ -37,6 +37,9 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
+                                <NavLink v-if="autorized=='Coach'" :href="route('schedules.index')" :active="route().current('schedules.index')">
+                                    Horario
+                                </NavLink>
                                 <NavLink v-if="autorized=='Employee' || autorized=='Admin'" :href="route('clients.index')" :active="route().current('clients.index')">
                                     Clientes
                                 </NavLink>                                
