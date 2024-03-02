@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Coach;
+use App\Models\Schedule;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
 
 class CoachController extends Controller
 {
@@ -12,53 +15,24 @@ class CoachController extends Controller
      */
     public function index()
     {
-        //
+        $coachs = User::select('*')->role('Coach')->with('profile')->orderBy('name')->get();
+        return Inertia::render('Coachs/Index', [ 'coachs'=>$coachs, 'autorized' => auth()->user()->roles()->first()->name
+            ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
         //
     }
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Coach $coach)
+    public function show(User $coach)
     {
-        //
+        $schedules = Schedule::where('user_id', $coach->id)->with('routine')->orderBy('day_of_week')->orderBy('hour')->get();
+        return Inertia::render('Coachs/Show', [ 'schedules'=>$schedules, 'coach'=>$coach, 'autorized' => auth()->user()->roles()->first()->name
+            ]);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Coach $coach)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Coach $coach)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Coach $coach)
+    public function update(Request $request, User $coach)
     {
         //
     }

@@ -49,6 +49,10 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink v-if="autorized=='Employee' || autorized=='Admin'" :href="route('concurrences.index')" :active="route().current('concurrences.index')">
                                     Asistencias
                                 </NavLink>
+                                <NavLink v-if="autorized=='Employee' || autorized=='Admin'" :href="route('coachs.index')" 
+                                    :active="route().current('coachs.index') || route().current('coachs.show')">
+                                    Entrenadores
+                                </NavLink>
                                 <NavLink v-if="autorized=='Employee' || autorized=='Admin'" :href="route('routines.index')" :active="route().current('routines.index')">
                                     Rutinas 
                                 </NavLink>

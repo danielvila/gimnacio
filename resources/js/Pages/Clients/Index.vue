@@ -76,6 +76,9 @@ const saveConcurrence = (id,) => {
     form_concurrence.post(route('concurrences.store'), {
         onSuccess: () => ok('Entrada agregada'),
         onError: (errors) => {
+            if (errors.revisa) {
+                ok(errors.revisa)
+            }
             console.error(errors);
         },
     });

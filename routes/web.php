@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientgymController;
+use App\Http\Controllers\CoachController;
 use App\Http\Controllers\ConcurrenceController;
 use App\Http\Controllers\MembershipController;
 use App\Http\Controllers\PaymentController;
@@ -34,6 +35,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('payments', PaymentController::class)->except($not_route)->middleware('can:payments.index');
     Route::resource('paymentypes', PaymentTypeController::class)->except($not_route)->middleware('can:paymentypes.index');
     Route::resource('routines', RoutineController::class)->except($not_route);
+    Route::resource('coachs', CoachController::class)->except(['edit', 'create', 'destroy'])->names('coachs');
 
     Route::resource('users', UserController::class)->except($not_route)->middleware('can:users.index');    
     Route::resource('memberships', MembershipController::class)->except($not_route)->middleware('can:memberships.index');
