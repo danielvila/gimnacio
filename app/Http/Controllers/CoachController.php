@@ -27,7 +27,7 @@ class CoachController extends Controller
 
     public function show(User $coach)
     {
-        $schedules = Schedule::where('user_id', $coach->id)->with('routine')->orderBy('day_of_week')->orderBy('hour')->get();
+        $schedules = Schedule::where('user_id', $coach->id)->with('routine')->orderBy('day_of_week')->orderBy('hour')->get();        
         return Inertia::render('Coachs/Show', [ 'schedules'=>$schedules, 'coach'=>$coach, 'autorized' => auth()->user()->roles()->first()->name
             ]);
     }
