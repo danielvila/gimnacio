@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\Routine;
 use Illuminate\Http\Request;
@@ -10,7 +12,7 @@ class RoutineController extends Controller
 {
     public function index()
     {
-        return Inertia::render('Routines/Index', ['routines'=> Routine::all(), 'autorized' => auth()->user()->roles()->first()->name]);
+        return Inertia::render('Admin/Routines/Index', ['routines'=> Routine::all(), 'autorized' => auth()->user()->roles()->first()->name]);
     }
 
     public function store(Request $request)

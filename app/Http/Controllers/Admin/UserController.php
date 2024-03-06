@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 
@@ -25,7 +25,7 @@ class UserController extends Controller
         $users = $users->paginate(10)->appends(request()->except(['page', 'client']));
         $roles = Role::select('id','name')->get();
        
-        return Inertia::render('Users/Index', ['users'=>$users, 'roles' => $roles, 'q' => $q, 'autorized' => auth()->user()->roles()->first()->name]);
+        return Inertia::render('Admin/Users/Index', ['users'=>$users, 'roles' => $roles, 'q' => $q, 'autorized' => auth()->user()->roles()->first()->name]);
     }
 
     public function store(Request $request)

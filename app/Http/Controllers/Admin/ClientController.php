@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\Concurrence;
 use App\Models\Membership;
@@ -29,7 +31,7 @@ class ClientController extends Controller
         $memberships = Membership::all();
         $payment_types = PaymentType::select('id','name')->get();
 
-        return Inertia::render('Clients/Index', [ 'clients'=>$clients, 
+        return Inertia::render('Admin/Clients/Index', [ 'clients'=>$clients, 
                 'memberships' => $memberships, 'payment_types' => $payment_types, 
                 'q' => $q, 'autorized' => auth()->user()->roles()->first()->name
             ]);
@@ -41,7 +43,7 @@ class ClientController extends Controller
         $payments = Payment::with(['membership','payment_type'])->where('user_id', $client->id)->orderByDesc('date_buys')->paginate(10)->appends(request()->except(['page']));
         $concurrences = Concurrence::where('user_id', $client->id)->orderByDesc('entry_time')->paginate(10)->appends(request()->except(['page']));
  
-        return Inertia::render('Clients/Show', [ 'full_client'=>$full_client, 
+        return Inertia::render('Admin/Clients/Show', [ 'full_client'=>$full_client, 
                 'payments'=>$payments, 'concurrences'=>$concurrences,
                 'autorized' => auth()->user()->roles()->first()->name
             ]);

@@ -58,7 +58,7 @@ const getPhone = (phone) => {
                                     </td>
                                     <td class="border border-gray-400 px-2 py-2">{{coach.profile.birthday}}</td>
                                     <td class="border border-gray-400 px-2 py-2 text-center">
-                                        <a :href="'/coachs/' + coach.id" title="Ver horario">
+                                        <a :href="$page.url+'/' + coach.id" title="Ver horario">
                                             <i class="fa-regular fa-eye"></i>
                                         </a>
                                     </td>                                    

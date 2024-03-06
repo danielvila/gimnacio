@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 use App\Models\Membership;
@@ -10,7 +12,7 @@ class MembershipController extends Controller
 {
     public function index()
     {        
-        return Inertia::render('Memberships/Index', ['memberships'=> Membership::all(), 'autorized' => auth()->user()->roles()->first()->name]);
+        return Inertia::render('Admin/Memberships/Index', ['memberships'=> Membership::all(), 'autorized' => auth()->user()->roles()->first()->name]);
     }
 
     public function store(Request $request)

@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -35,7 +37,7 @@ class PaymentController extends Controller
         
         $payment_types = PaymentType::select('id','name')->get();
         
-        return Inertia::render('Payments/Index', [ 'payments'=> $payments,
+        return Inertia::render('Admin/Payments/Index', [ 'payments'=> $payments,
                 'date_start'=> $date_start, 'date_end' => $date_end,
                 'memberships'=> $memberships, 'payment_types' => $payment_types,
                 'users'=> $users, 'autorized' => auth()->user()->roles()->first()->name

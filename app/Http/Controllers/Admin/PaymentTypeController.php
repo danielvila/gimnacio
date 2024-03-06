@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\PaymentType;
 use Illuminate\Http\Request;
@@ -10,7 +12,7 @@ class PaymentTypeController extends Controller
 {
     public function index()
     {        
-        return Inertia::render('Paymentypes/Index', ['paymentypes'=> PaymentType::all(), 'autorized' => auth()->user()->roles()->first()->name]);
+        return Inertia::render('Admin/Paymentypes/Index', ['paymentypes'=> PaymentType::all(), 'autorized' => auth()->user()->roles()->first()->name]);
     }
 
     public function store(Request $request)

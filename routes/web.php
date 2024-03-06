@@ -1,16 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientgymController;
-use App\Http\Controllers\CoachController;
-use App\Http\Controllers\ConcurrenceController;
-use App\Http\Controllers\MembershipController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\PaymentTypeController;
-use App\Http\Controllers\RoutineController;
 use App\Http\Controllers\ScheduleController;
-use App\Http\Controllers\UserController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -29,17 +21,6 @@ Route::middleware('auth')->group(function () {
 
     $not_route = ['edit', 'create', 'show'];
     Route::resource('schedules', ScheduleController::class)->except($not_route);
-
-    Route::resource('clients', ClientController::class)->except( ['edit', 'create'])->middleware('can:clients.index');
-    Route::resource('concurrences', ConcurrenceController::class)->only(['index','store'])->middleware('can:concurrences.index');   
-    Route::resource('payments', PaymentController::class)->except($not_route)->middleware('can:payments.index');
-    Route::resource('paymentypes', PaymentTypeController::class)->except($not_route)->middleware('can:paymentypes.index');
-    Route::resource('routines', RoutineController::class)->except($not_route);
-    Route::resource('coachs', CoachController::class)->except(['edit', 'create', 'destroy'])->names('coachs');
-
-    Route::resource('users', UserController::class)->except($not_route)->middleware('can:users.index');    
-    Route::resource('memberships', MembershipController::class)->except($not_route)->middleware('can:memberships.index');
- 
 });
 
 require __DIR__.'/auth.php';

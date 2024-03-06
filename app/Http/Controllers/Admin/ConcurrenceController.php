@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
 
 use App\Models\Concurrence;
 use App\Models\Payment;
@@ -28,7 +30,7 @@ class ConcurrenceController extends Controller
        
         $concurrences = $concurrences->paginate(10)->appends(request()->except(['page']));
                 
-        return Inertia::render('Concurrences/Index', [ 'concurrences'=> $concurrences,
+        return Inertia::render('Admin/Concurrences/Index', [ 'concurrences'=> $concurrences,
                 'date_concurrence'=> $date_concurrence,
                 'autorized' => auth()->user()->roles()->first()->name
             ]);
