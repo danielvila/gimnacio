@@ -1,4 +1,6 @@
 <script setup>
+import ClientLayout from '@/Layouts/ClientLayout.vue';
+import AuthLayout from '@/Layouts/AuthLayout.vue';
 import { ref } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
@@ -37,37 +39,10 @@ const showingNavigationDropdown = ref(false);
                                 <NavLink :href="route('dashboard')" :active="route().current('dashboard')">
                                     Dashboard
                                 </NavLink>
-                                 <NavLink v-if="autorized=='Client'" :href="route('schedules.index')" :active="route().current('schedules.index')">
-                                    Horario
-                                </NavLink>
-                                <NavLink v-if="autorized=='Coach'" :href="route('schedules.index')" :active="route().current('schedules.index')">
-                                    Horario
-                                </NavLink>
-                                <NavLink v-if="autorized=='Employee' || autorized=='Admin'" :href="route('clients.index')" :active="route().current('clients.index')">
-                                    Clientes
-                                </NavLink>                                
-                                <NavLink v-if="autorized=='Employee' || autorized=='Admin'" :href="route('payments.index')" :active="route().current('payments.index')">
-                                    Pagos
-                                </NavLink>
-                                <NavLink v-if="autorized=='Employee' || autorized=='Admin'" :href="route('concurrences.index')" :active="route().current('concurrences.index')">
-                                    Asistencias
-                                </NavLink>
-                                <NavLink v-if="autorized=='Employee' || autorized=='Admin'" :href="route('coachs.index')" 
-                                    :active="route().current('coachs.index') || route().current('coachs.show')">
-                                    Entrenadores
-                                </NavLink>
-                                <NavLink v-if="autorized=='Employee' || autorized=='Admin'" :href="route('routines.index')" :active="route().current('routines.index')">
-                                    Rutinas 
-                                </NavLink>
-                                <NavLink v-if="autorized=='Employee' || autorized=='Admin'" :href="route('paymentypes.index')" :active="route().current('paymentypes.index')">
-                                    Tipos de pago 
-                                </NavLink>
-                                <NavLink v-if="autorized=='Admin'" :href="route('memberships.index')" :active="route().current('memberships.index')">
-                                    Membresias 
-                                </NavLink>
-                                <NavLink v-if="autorized=='Admin'" :href="route('users.index')" :active="route().current('users.index')">
-                                    Usuarios
-                                </NavLink>
+                                
+                                <ClientLayout v-if="autorized=='Client'" :autorized="autorized"/>
+                                <AuthLayout v-if="autorized!='Client'" :autorized="autorized"/>                              
+                                
                             </div>
                         </div>
 

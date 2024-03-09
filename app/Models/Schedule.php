@@ -15,6 +15,10 @@ class Schedule extends Model
         return $this->belongsTo('App\Models\User');
     }
 
+    public function clients(){
+        return $this->belongsToMany('App\Models\User');
+    }
+
     public function routine(){
         return $this->belongsTo('App\Models\Routine');
     }

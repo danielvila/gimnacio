@@ -4,7 +4,9 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
@@ -19,16 +21,20 @@ class User extends Authenticatable
         return $this->hasOne('App\Models\Profile');
     }
 
-    public function payments(){
-        return $this->hasMany('App\Models\Payment');
+    public function payments(): HasMany{
+        return $this->hasMany(Payment::class);
     }
 
-    public function concurrences(){
-        return $this->hasMany('App\Models\Concurrence');
+    public function concurrences(): HasMany{
+        return $this->hasMany(Concurrence::class);
     }
 
-    public function schudeles(){
-        return $this->hasMany('App\Models\Schedule');
+    public function schedules(): HasMany{
+        return $this->hasMany(Schedule::class);
+    }
+
+    public function horaries(): BelongsToMany{
+        return $this->belongsToMany(Schedule::class);
     }
 
     protected $fillable = [

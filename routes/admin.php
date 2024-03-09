@@ -14,8 +14,9 @@ use App\Http\Controllers\Admin\UserController;
 
 $not_route = ['edit', 'create', 'show'];
 Route::resource('schedules', ScheduleController::class)->except($not_route);
+Route::get('students', [ScheduleController::class, 'clients'])->name('students');
 
-Route::resource('clients', ClientController::class)->except( ['edit', 'create'])->middleware('can:admin.clients.index');
+Route::resource('clients', ClientController::class)->except( ['edit', 'create'])->middleware('can:clients.index');
 Route::resource('concurrences', ConcurrenceController::class)->only(['index','store'])->middleware('can:concurrences.index');   
 Route::resource('payments', PaymentController::class)->except($not_route)->middleware('can:payments.index');
 Route::resource('paymentypes', PaymentTypeController::class)->except($not_route)->middleware('can:paymentypes.index');

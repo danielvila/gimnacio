@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use App\Models\Routine;
 use App\Models\Schedule;
+use App\Models\User;
 use Carbon\Carbon;
 
 class ScheduleController extends Controller
@@ -63,4 +65,21 @@ class ScheduleController extends Controller
         $schedule->delete();
         return to_route('schedules.index');
     }
+
+    public function clients()
+    {
+        $schedules = Schedule::where('user_id', auth()->user()->id)->with(['routine', 'user'])->orderBy('day_of_week')->orderBy('hour')->get();
+        $routines = Routine::select('id','name')->get();
+        $clients = [];
+        foreach ($schedules as $key => $value) {
+            foreach ($value->clients as $key => $student) {
+                $clients[]=['schedule_id'=>$student->pivot->schedule_id, 'name'=>$student->name];
+            }            
+        }
+       
+        return Inertia::render('Admin/Schedules/Clients', ['schedules'=> $schedules, 
+            'clients'=> $clients, 'routines'=> $routines, 
+            'autorized' => auth()->user()->roles()->first()->name]
+        );
+    } 
 }

@@ -6,16 +6,20 @@ import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
 import { Head, useForm } from '@inertiajs/vue3';
 import { onMounted, ref } from 'vue';
+import Swal from 'sweetalert2';
 
 const props = defineProps({
     schedules: {type:Object},
+    clients: {type:Object},
     autorized: {type:String}
 });
 
 const daysofweek = ref('');
 const hoursday = ref('');
 const ventanamodal = ref(false);
-const form = useForm({ schedule_id: '', coach: '', rutine: '', description: '' });
+const studentsmodal = ref(false);
+const schedule_id = ref('');
+const form = useForm({ schedule_id: '', rutine: '', description: '' });
 
 onMounted(() => {
     const diasUnicos = new Set(props.schedules.map(objeto => objeto.day_of_week));
@@ -25,7 +29,7 @@ onMounted(() => {
         const { day_of_week } = elemento;
 
         if (!acumulador[day_of_week]) {
-        acumulador[day_of_week] = [];
+            acumulador[day_of_week] = [];
         }
         acumulador[day_of_week].push(elemento);
 
@@ -35,54 +39,38 @@ onMounted(() => {
     hoursday.value = Object.values(datosPorDia);
 });
 
-const openModal = (id, coach, rutine, description)=>{   
+const openModal = (id, rutine, description)=>{   
     ventanamodal.value = true;
     form.schedule_id = id;
-    form.coach = coach;
     form.rutine = rutine;
-    form.description = description;   
+    form.description = description;
+}
+
+const openstudentModal = (id)=>{   
+    studentsmodal.value = true;
+    schedule_id.value = id;
 }
 
 const closeModal = ()=>{
     ventanamodal.value = false;
+    studentsmodal.value = false;
+    schedule_id.value = '';
     form.reset();
 }
 
-const save = ()=>{
-    if(form.schedule_id > 0){
-        form.post(route('schedules.store'), {
-            onSuccess: () => ok('Inscripción realizada'),
-            onError: (errors) => {
-                console.error(errors);
-            },
-        });        
+const students = (id)=>{
+    var student = '';
+    var x = 0;
+    for(x; x < props.clients.length; x++){
+        if(props.clients[x]['schedule_id'] == id){
+           student += props.clients[x]['name'];
+        }  
     }
-}
-
-const deleteRegister = () => {
-    const alerta = Swal.mixin({
-        buttonsStyling:true
-    });
-    alerta.fire({
-        title:'Seguro que quiere eliminar: Esta clase?',
-        icon:'question', showCancelButton: true,
-        confirmButtonText:'<i class="fa-solid fa-check"></i> Si, eliminar',
-        cancelButtonText:'<i class="fa-solid fa-ban"></i> Cancelar',
-    }).then((result) => {
-        if(result.isConfirmed){
-            form.delete(route('schedules.destroy', id), {
-                onSuccess: ()=>{ok('Inscripción eliminada')},
-                onError: (errors) => {
-                    console.error(errors);
-                },
-            });
-        }
-    });
-}
-
-const ok = (msj) => {    
-    closeModal();
-    Swal.fire({title:msj, icon:'success'});
+    if (student != '') {
+        return true;
+    }else{
+        return false;
+    }    
 }
 </script>
 
@@ -97,8 +85,7 @@ const ok = (msj) => {
         <div class="py-12">
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
-                    <div class="p-3 lg:p-8 flex justify-between border-b border-gray-200">                        
-                                        
+                    <div class="p-3 lg:p-8 flex justify-between border-b border-gray-200">
                     </div>                    
                     <div class="bg-gray-200 bg-opacity-25 p-6 lg:p-8">
                         <table class="w-full border text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
@@ -109,10 +96,11 @@ const ok = (msj) => {
                             </thead>
                             <tbody>
                                 <tr class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                                    <td class="border border-gray-400" v-for="hourday, i in hoursday" :key="i">
+                                    <td class="border border-gray-400" v-for="hourday, i in hoursday" :key="i">{{hourday.clients}}
                                         <ul>
-                                            <li v-for="(day, j) in hourday" :key="j" class="border border-gray-400 px-2 py-3 cursor-pointer">
-                                                <p @click="$event => openModal(day.id, day.user.name, day.routine.name, day.description)">{{ day.hour }}</p>
+                                            <li v-for="(day, j) in hourday" :key="j" class="border border-gray-400 cursor-pointer" style="height: 74px;">
+                                                <p @click="$event => openModal(day.id, day.routine.name, day.description)" class="p-2" title="Ver detalles del horario">{{ day.hour }}</p>
+                                                <p v-if="students(day.id)" @click="$event => openstudentModal(day.id)" class="p-2 bg-gray-300" title="Ver lista de estudiantes">ver estudiantes</p>
                                             </li>
                                         </ul>
                                     </td>                                 
@@ -123,13 +111,8 @@ const ok = (msj) => {
                 </div>
             </div>
         </div>
-        <Modal :show="ventanamodal" @close="closeModal">
-            <div class="sm:flex">                
-                <h2 class="p-6 text-lg font.medium text-gray-900">
-                    Entrenador: {{form.coach}}                
-                </h2>               
-            </div>
-            <div class="px-6">
+        <Modal :show="ventanamodal" @close="closeModal">           
+            <div class="px-6 pt-6">
                 <p class="pb-2">
                     Rutina: {{form.rutine}}
                 </p>
@@ -138,17 +121,23 @@ const ok = (msj) => {
                     {{form.description}}
                 </p>
             </div>
-            <div class="p-6 mt-6 flex justify-between">
-                <PrimaryButton :class="{ 'opacity-25': form.processing }" 
-                    :disabled="form.processing" @click="save">
-                    <i class="fa-regular fa-square-check mr-2"></i> inscribirse
-                </PrimaryButton>
-               
-                <DangerButton :class="{ 'opacity-25': form.processing }" 
-                    :disabled="form.processing" @click="deleteRegister">
-                    <i class="fa-regular fa-trash-can mr-2"></i> Cancelar
-                </DangerButton>
-
+            <div class="p-6 mt-6 flex justify-between">                
+                <SecondaryButton :class="{ 'opacity-25': form.processing }" 
+                    :disabled="form.processing" @click="closeModal">
+                    <i class="fa-regular fa-rectangle-xmark  mr-2"></i> Cerrar
+                </SecondaryButton>
+            </div>
+        </Modal>
+         <Modal :show="studentsmodal" @close="closeModal">           
+            <div class="px-6 pt-6">
+                <h3 class="pb-3">
+                    Lista de estudiantes
+                </h3>                             
+               <div v-for="(client, j) in clients" :key="j">
+                    <span v-if="client.schedule_id==schedule_id">{{ client.name }}</span>
+                </div>                
+            </div>
+            <div class="p-6 mt-6 flex justify-between">                
                 <SecondaryButton :class="{ 'opacity-25': form.processing }" 
                     :disabled="form.processing" @click="closeModal">
                     <i class="fa-regular fa-rectangle-xmark  mr-2"></i> Cerrar
