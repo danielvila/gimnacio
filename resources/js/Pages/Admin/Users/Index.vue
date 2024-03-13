@@ -7,7 +7,6 @@ import Modal from '@/Components/Modal.vue';
 import Paginator from "@/Components/Paginator.vue";
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import SecondaryButton from '@/Components/SecondaryButton.vue';
-import SelectInput from '@/Components/SelectInput.vue';
 import TextInput from '@/Components/TextInput.vue';
 import WarningButton from '@/Components/WarningButton.vue';
 import { Head, useForm } from '@inertiajs/vue3';

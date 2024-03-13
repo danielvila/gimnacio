@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\PaymentController;
 use App\Http\Controllers\Admin\PaymentTypeController;
 use App\Http\Controllers\Admin\RoutineController;
 use App\Http\Controllers\Admin\ScheduleController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\UserController;
 
 
@@ -25,3 +26,4 @@ Route::resource('coachs', CoachController::class)->only(['index', 'show'])->name
 
 Route::resource('users', UserController::class)->except($not_route)->middleware('can:users.index');    
 Route::resource('memberships', MembershipController::class)->except($not_route)->middleware('can:memberships.index');
+Route::resource('settings', SettingController::class)->only(['index','update', 'destroy']);

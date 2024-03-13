@@ -47,4 +47,7 @@ const showingNavigationDropdown = ref(false);
     <NavLink v-if="autorized=='Admin'" :href="route('users.index')" :active="route().current('users.index')">
         Usuarios
     </NavLink>
+    <NavLink v-if="autorized=='Employee' || autorized=='Admin'" :href="route('settings.index')" :active="route().current('settings.index')">
+        Configuración
+    </NavLink>
 </template>
