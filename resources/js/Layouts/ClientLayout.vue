@@ -15,5 +15,8 @@ const props = defineProps({
     </NavLink>
     <NavLink v-if="autorized=='Client'" :href="route('concurrences')" :active="route().current('concurrences')">
         Visitas
+    </NavLink>
+    <NavLink :href="route('contact.index')" :active="route().current('contact.index')">
+        Contactanos
     </NavLink>     
 </template>

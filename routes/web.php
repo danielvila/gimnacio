@@ -1,15 +1,20 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ClientgymController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ScheduleController;
 use Illuminate\Foundation\Application;
+
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
 Route::resource('/', ClientgymController::class)->only(['index','store'])->names('home');
 Route::put('/{concurrence}', [ClientgymController::class, 'update'])->name('home.update');
+
+Route::get('contact', [ContactController::class, 'index'])->name('contact.index');
+Route::post('contact', [ContactController::class, 'store'])->name('contact.store');
 
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', ['autorized' => auth()->user()->roles()->first()->name]);
