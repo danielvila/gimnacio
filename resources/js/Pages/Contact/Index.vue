@@ -48,6 +48,10 @@ const save = () => {
     <Head title="Bienvenido" />
 
     <div class="sm:flex sm:justify-center min-h-screen bg-center bg-gray-100 selection:bg-red-500 selection:text-white" >
+        <Link :href="route('home.index')"
+                class="font-semibold text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white focus:outline focus:outline-2 focus:rounded-sm focus:outline-red-500">
+            Home
+        </Link>
         <div v-if="canLogin" class="sm:fixed sm:top-0 sm:right-0 p-6 text-end">
             <Link
                 v-if="$page.props.auth.user"
@@ -64,7 +68,6 @@ const save = () => {
                 >
             </template>
         </div>
-
         <div class="w-full mx-auto mt-6">
             <div class="max-w-3xl mx-auto bg-white overflow-hidden shadow-xl sm:rounded-lg px-6">             
                 <div class="p-3 lg:p-8 flex justify-between border-b border-gray-200">                        

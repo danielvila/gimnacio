@@ -23,7 +23,7 @@ class ContactanosMailable extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Membresia por vencer',
+            subject: $this->data['subject'],
         );
     }
 
