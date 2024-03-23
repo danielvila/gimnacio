@@ -28,9 +28,9 @@ const openModal = (id, name)=>{
     nextTick(()=> nameInput.value.focus());
     id_membership.value = id;
     if(id==0){
-        title.value = 'Crear Membresia';
+        title.value = 'Crear tipo de pago';
     }else{        
-        title.value = 'Editar Membresia';
+        title.value = 'Editar tipo de pago';
         form.name = name;
     }
 }
@@ -76,7 +76,7 @@ const deleteClient = (id, name) => {
     }).then((result) => {
         if(result.isConfirmed){
             form.delete(route('paymentypes.destroy', id), {
-                onSuccess: ()=>{ok('Tipo de pago eliminada')},
+                onSuccess: ()=>{ok('Tipo de pago eliminado')},
                 onError: (errors) => {
                     console.error(errors);
                 },
@@ -99,7 +99,7 @@ const deleteClient = (id, name) => {
                 <div class="bg-white overflow-hidden shadow-xl sm:rounded-lg">
                     <div class="p-3 lg:p-8 flex justify-between border-b border-gray-200">                        
                         <PrimaryButton 
-                            @click="$event => openModal(0)">
+                            @click="$event => openModal(0)" title="Agregar tipo de pago">
                             <i class="fa-solid fa-plus-circle"></i> Agregar tipo de pago
                         </PrimaryButton>                    
                     </div>                    
@@ -117,12 +117,12 @@ const deleteClient = (id, name) => {
                                     <td class="border border-gray-400 px-2 py-2">{{i + 1}}</td>
                                     <td class="border border-gray-400 px-2 py-2">{{paymentype.name}}</td>
                                     <td class="border border-gray-400 px-2 py-2">
-                                        <WarningButton @click="$event => openModal(paymentype.id, paymentype.name)">
+                                        <WarningButton @click="$event => openModal(paymentype.id, paymentype.name)" title="Editar tipo de pago">
                                             <i class="fa-solid fa-edit"></i>
                                         </WarningButton>
                                     </td>
                                     <td class="border border-gray-400 px-2 py-2">
-                                        <DangerButton @click="$event => deleteClient(paymentype.id, paymentype.name)">
+                                        <DangerButton @click="$event => deleteClient(paymentype.id, paymentype.name)" title="Eliminar tipo de pago">
                                             <i class="fa-solid fa-trash"></i>
                                         </DangerButton>
                                     </td>
@@ -144,13 +144,13 @@ const deleteClient = (id, name) => {
                 
             <div class="sm:flex">
                 <div class="p-3 basis-2/4">
-                    <InputLabel for="name" value="Nombre de la membresia:" />
+                    <InputLabel for="name" value="Nombre del tipo de pago:" />
                     <TextInput 
                         id="name"
                         v-model="form.name"  ref="nameInput"
                         type="text"
                         class="mt-1 block w-full"                   
-                        placeholder="Nombre de la membresia"
+                        placeholder="Nombre del tipo de pago"
                         required
                         autofocus
                         autocomplete="name"

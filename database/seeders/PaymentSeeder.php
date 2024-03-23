@@ -32,7 +32,9 @@ class PaymentSeeder extends Seeder
             $fechaFin->addDays($membership[$ship]->duration);
                    
             Payment::create([
-                'amount' => $membership[$ship]->price, 
+                'amount' => $membership[$ship]->price,
+                'type_receptor' => 2,
+                'type_contrib' => 1,
                 'date_buys' => $fechaInicio,
                 'date_buys_end' => $fechaFin, 
                 'user_id' => $client->id, 

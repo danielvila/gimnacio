@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use App\Models\Membership;
 use App\Models\Payment;
 use App\Models\PaymentType;
@@ -44,6 +45,73 @@ class PaymentController extends Controller
             ]);
     }
 
+    public function facelect($id, $request){
+        $amount = $request->input('amount');
+        $taxe = number_format($request->input('amount') * 0.07, 2, '.', '');
+        $data = [
+            "header" => [
+                "id" => 1,
+                "environment" => "2"
+            ],
+            "document" => [
+                "fd_number" => $id,
+                "receptor" => [
+                    "type" => str_pad($request->input('type_receptor'), 2, '0', STR_PAD_LEFT),
+                    "name" => $request->input('name'),
+                    "ruc_type" => $request->input('type_contrib'),
+                    "address" => "",
+                    "email" => "",
+                    "ruc" => "",
+                    "dv" => ""
+                ],
+                "items" => [
+                    [
+                        "line" => 1,
+                        "price" => $amount,
+                        "mu" => "und",
+                        "quantity" => 1,
+                        "description" => $request->input('membership'),
+                        "taxes" => [
+                            [
+                                "type" => "01",
+                                "amount" => $taxe,
+                                "code" => "01"
+                            ]
+                        ],
+                        "discount" => 0.0,
+                        "internal_code" => $request->input('membership_id')
+                    ]
+                ],
+                "payments" => [
+                    [
+                        "type" => str_pad($request->input('payment_type_id'), 2, '0', STR_PAD_LEFT),
+                        "amount" => $amount + $taxe,
+                        "description" => "Medio de pago ".$request->input('payment_name')
+                    ]
+                ],
+                "type" => "01",
+                "info" => "Pago por membresia, tiene derecho a usar las instalaciones del gimnasio."
+            ]
+        ];
+        
+        // Realizar una solicitud HTTP POST
+        $response = Http::withHeaders([
+            'X-FF-Company' => '2a45cee2-77a5-49ca-b270-fa70966592e8',
+            'X-FF-API-Key' => '3rU19SJfOWaWkydid4jmbedln-f7oYvkSd0nw-6vZT8xRfdTymd2KK2DPu-DQCjEeSaZ_bHRugSiKc95zOJq1tpSBaKA1k1CX-idv2oeH3sgMiXlzRo2h_4HzeFPpFWh',
+            'X-FF-Branch' => 'fe175fcf-9af4-4aad-8f7b-dedb4e0952c4',
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json'
+        ])->post('https://backend-qa-api.facturafacil.com.pa/api/pac/reception_fe/detailed/', $data);
+
+        // Verificar si la solicitud fue exitosa
+        if ($response->successful()) {
+            return $response->body();
+        } else {
+            $errorCode = $response->status();
+            return 'Unexpected HTTP status: ' . $response->status() . ' ' . $response->body();
+        }
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -54,8 +122,9 @@ class PaymentController extends Controller
             'payment_type_id' => 'required',
         ]);
         
-        Payment::create($this->arrayData($request));
-        
+        $payment = Payment::create($this->arrayData($request));
+        $cafe = $this->facelect($payment->id, $request);
+        //dd($cafe);
         return to_route('payments.index');
     }
 
